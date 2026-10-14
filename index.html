@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DST Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fff8fa;
+    --panel: #ffffff;
+    --panel-alt: #fff0f6;
+    --border: #ffd6e6;
+    --text: #4a3540;
+    --text-dim2: #9c8290;
+    --pink-light: #ffe4ef;
+    --pink: #ff8fb3;
+    --pink-dark: #d6336c;
+    --green-light: #dcf6e8;
+    --green: #63c58a;
+    --green-dark: #1f8f5f;
+    --danger: #e0554f;
+    --bg-gradient: linear-gradient(160deg, #fff8fa 0%, #f3fbf6 100%);
+    --card-shadow: 0 4px 16px rgba(214, 51, 108, 0.1);
+  }
+  :root[data-theme="dark"] {
+    --bg: #1c1620;
+    --panel: #2a2130;
+    --panel-alt: #251d2b;
+    --border: #4a3550;
+    --text: #f1e6ec;
+    --text-dim2: #b49aa8;
+    --pink-light: #4a2438;
+    --pink: #ff8fb3;
+    --pink-dark: #ff6fa0;
+    --green-light: #1c3a2c;
+    --green: #63c58a;
+    --green-dark: #5be0a0;
+    --danger: #ff7a72;
+    --bg-gradient: linear-gradient(160deg, #1c1620 0%, #16201c 100%);
+    --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]):not([data-theme="dark"]) {
+      --bg: #1c1620;
+      --panel: #2a2130;
+      --panel-alt: #251d2b;
+      --border: #4a3550;
+      --text: #f1e6ec;
+      --text-dim2: #b49aa8;
+      --pink-light: #4a2438;
+      --pink: #ff8fb3;
+      --pink-dark: #ff6fa0;
+      --green-light: #1c3a2c;
+      --green: #63c58a;
+      --green-dark: #5be0a0;
+      --danger: #ff7a72;
+      --bg-gradient: linear-gradient(160deg, #1c1620 0%, #16201c 100%);
+      --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    background: var(--bg-gradient);
+    color: var(--text);
+    font-family: "Quicksand", "Segoe UI", sans-serif;
+    transition: background 0.2s, color 0.2s;
+  }
+  #app { display: flex; flex-direction: column; height: 100vh; }
+
+  /* ---------- Landing page ---------- */
+  #landing-view {
+    position: relative; flex: 1; align-items: center; justify-content: center;
+    background: var(--bg-gradient); padding: 20px;
+  }
+  #landing-view:not([hidden]) { display: flex; }
+  .landing-center { width: 100%; max-width: 620px; text-align: center; margin-top: -40px; }
+  .landing-logo {
+    font-family: "Baloo 2", cursive; font-weight: 800; font-size: 52px; margin: 0;
+    background: linear-gradient(100deg, var(--pink-dark) 0%, var(--pink) 45%, var(--green-dark) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .landing-tagline { font-size: 15px; color: var(--text-dim2); margin: 6px 0 20px; }
+  .game-mode-switch {
+    display: inline-flex; gap: 4px; background: var(--panel-alt); border: 1.5px solid var(--border);
+    border-radius: 999px; padding: 4px; margin-bottom: 22px;
+  }
+  .game-mode-btn {
+    font-family: "Baloo 2", cursive; font-weight: 700; font-size: 12.5px; line-height: 1;
+    background: none; border: none; color: var(--text-dim2);
+    padding: 9px 16px; border-radius: 999px; cursor: pointer; transition: all 0.15s; white-space: nowrap;
+  }
+  .game-mode-btn:hover { color: var(--text); }
+  .game-mode-btn.active {
+    background: linear-gradient(100deg, var(--pink), var(--pink-dark));
+    color: #fff; box-shadow: 0 2px 6px rgba(214,51,108,0.3);
+  }
+  .settings-row.settings-row-stack { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .game-mode-switch-compact { width: 100%; }
+  .game-mode-switch-compact .game-mode-btn { flex: 1; font-size: 11.5px; padding: 8px 6px; }
+  .landing-search-row {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--panel); border: 1.5px solid var(--border); border-radius: 999px;
+    padding: 14px 24px; box-shadow: var(--card-shadow); transition: box-shadow 0.2s, border-color 0.2s;
+  }
+  .landing-search-row:focus-within { border-color: var(--pink); box-shadow: 0 6px 22px rgba(214,51,108,0.18); }
+  .landing-search-icon { font-size: 18px; opacity: 0.6; flex-shrink: 0; }
+  #landing-search-box {
+    flex: 1; border: none; background: none; outline: none; font-size: 16px;
+    font-family: "Quicksand", sans-serif; color: var(--text); min-width: 0;
+  }
+  #landing-search-box::placeholder { color: var(--text-dim2); }
+  .landing-actions { display: flex; justify-content: center; gap: 12px; margin: 24px 0 30px; flex-wrap: wrap; }
+  .landing-actions button {
+    font-family: "Quicksand", sans-serif; font-weight: 700; font-size: 13.5px;
+    background: var(--panel-alt); border: 1.5px solid var(--border); color: var(--text);
+    padding: 10px 20px; border-radius: 10px; cursor: pointer; transition: all 0.15s;
+  }
+  .landing-actions button:hover { border-color: var(--pink); box-shadow: 0 2px 8px rgba(214,51,108,0.15); transform: translateY(-1px); }
+  .landing-links { display: flex; justify-content: center; gap: 8px 18px; flex-wrap: wrap; }
+  .landing-link {
+    font-family: "Quicksand", sans-serif; font-weight: 700; font-size: 12.5px;
+    background: none; border: none; color: var(--pink-dark); cursor: pointer; padding: 4px;
+  }
+  .landing-link:hover { text-decoration: underline; }
+  .landing-credit {
+    position: absolute; bottom: 14px; left: 16px; right: 16px; text-align: center;
+    font-size: 11px; color: var(--text-dim2); line-height: 1.5;
+  }
+  .landing-credit a { color: var(--text-dim2); text-decoration: underline; }
+  @media (max-width: 480px) {
+    .landing-logo { font-size: 38px; }
+    .landing-search-row { padding: 12px 18px; }
+  }
+  #landing-settings-btn {
+    position: absolute; top: 20px; right: 20px;
+    background: var(--panel); border: 1.5px solid var(--border); color: var(--text);
+  }
+  #landing-settings-btn:hover { background: var(--panel-alt); }
+
+  /* ---------- Sticky toolbar: header + search + tab bar ---------- */
+  #toolbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 20;
+    transition: transform 0.25s ease;
+  }
+  #app.toolbar-hidden #toolbar { transform: translateY(-100%); }
+  #toolbar-hover-zone { position: fixed; top: 0; left: 0; right: 0; height: 14px; z-index: 19; }
+  header {
+    padding: 8px 16px;
+    background: linear-gradient(100deg, var(--pink) 0%, var(--pink-dark) 50%, var(--green-dark) 100%);
+    box-shadow: 0 2px 12px rgba(214, 51, 108, 0.25);
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  }
+  .brand {
+    display: flex; flex-direction: column; gap: 1px; background: none; border: none;
+    cursor: pointer; padding: 4px 6px; border-radius: 10px; text-align: left;
+  }
+  .brand:hover { background: rgba(255,255,255,0.15); }
+  .brand h1 {
+    font-family: "Baloo 2", cursive; font-size: 19px; margin: 0; color: #fff;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.15); letter-spacing: 0.3px; white-space: nowrap;
+  }
+  .brand .tagline { font-size: 10.5px; color: #ffe9f1; opacity: 0.95; }
+  @media (max-width: 420px) { .brand .tagline { display: none; } }
+  #search-box {
+    flex: 1 1 180px; min-width: 120px;
+    background: var(--panel); border: none; border-radius: 999px;
+    color: var(--text); padding: 6px 14px; font-size: 13px; font-family: "Quicksand", sans-serif;
+    box-shadow: inset 0 0 0 2px transparent;
+  }
+  #search-box::placeholder { color: var(--text-dim2); }
+  #search-box:focus { outline: none; box-shadow: inset 0 0 0 2px var(--pink-dark); }
+
+  .corner-settings-btn {
+    flex: 0 0 auto; width: 38px; height: 38px; border-radius: 50%;
+    background: rgba(255,255,255,0.25); border: 1.5px solid rgba(255,255,255,0.5);
+    font-size: 17px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+  .corner-settings-btn:hover { background: rgba(255,255,255,0.4); }
+
+  #settings-panel {
+    position: fixed; top: 66px; right: 18px; z-index: 60; width: 250px;
+    background: var(--panel); border: 2px solid var(--border); border-radius: 16px;
+    box-shadow: var(--card-shadow); padding: 16px; flex-direction: column; align-items: stretch; gap: 14px;
+  }
+  #settings-panel:not([hidden]) { display: flex; }
+  #settings-panel .settings-row { justify-content: space-between; }
+  #settings-panel #reset-colors-btn { align-self: flex-start; }
+  .settings-row { display: flex; align-items: center; gap: 8px; }
+  .settings-label { font-family: "Baloo 2", cursive; font-weight: 700; font-size: 13px; color: var(--text); }
+  .color-swatch {
+    width: 34px; height: 34px; padding: 0; border: 2px solid var(--border); border-radius: 8px;
+    cursor: pointer; background: none;
+  }
+  #reset-colors-btn {
+    font-family: "Baloo 2", cursive; font-weight: 700; font-size: 12.5px; line-height: 1;
+    background: var(--panel-alt); border: 1.5px solid var(--border); color: var(--text-dim2);
+    padding: 8px 14px; border-radius: 999px; cursor: pointer;
+  }
+  #reset-colors-btn:hover { color: var(--text); border-color: var(--pink); }
+
+  .switch { display: inline-block; }
+  .switch input { display: none; }
+  .switch-track {
+    display: block; width: 42px; height: 24px; border-radius: 999px;
+    background: var(--border); position: relative; transition: background 0.2s; cursor: pointer;
+  }
+  .switch-thumb {
+    position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%;
+    background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.3); transition: left 0.2s;
+  }
+  .switch input:checked + .switch-track { background: var(--pink-dark); }
+  .switch input:checked + .switch-track .switch-thumb { left: 21px; }
+
+  #browse-menu-wrap { position: relative; flex: 0 0 auto; }
+  #browse-menu-btn {
+    display: inline-flex; align-items: center; gap: 6px; line-height: 1;
+    background: rgba(255,255,255,0.25); border: 1.5px solid rgba(255,255,255,0.5); color: #fff;
+    font-family: "Baloo 2", cursive; font-weight: 700; font-size: 13px;
+    padding: 8px 14px; border-radius: 999px; white-space: nowrap; cursor: pointer;
+  }
+  #browse-menu-btn:hover { background: rgba(255,255,255,0.4); }
+  #tab-bar {
+    position: absolute; top: calc(100% + 8px); right: 0; z-index: 60;
+    flex-direction: column; gap: 6px; width: 190px;
+    background: var(--panel); border: 2px solid var(--border); border-radius: 14px;
+    box-shadow: var(--card-shadow); padding: 10px;
+  }
+  #tab-bar:not([hidden]) { display: flex; }
+  .tab-btn {
+    display: inline-flex; align-items: center; gap: 8px; line-height: 1; justify-content: flex-start;
+    background: var(--pink-light); border: 1.5px solid var(--pink); color: var(--pink-dark);
+    font-family: "Baloo 2", cursive; font-weight: 700; font-size: 13.5px;
+    padding: 9px 14px; border-radius: 999px; white-space: nowrap; cursor: pointer; transition: all 0.15s;
+  }
+  .tab-btn:hover { background: var(--pink); color: #fff; }
+  .tab-btn.active { background: var(--pink-dark); color: #fff; border-color: var(--pink-dark);
+    box-shadow: 0 2px 6px rgba(214,51,108,0.35); }
+
+  /* ---------- Scrollable body ---------- */
+  #scroll-area {
+    flex: 1; overflow-y: auto;
+    padding-top: var(--toolbar-h, 64px); transition: padding-top 0.25s ease;
+  }
+  #app.toolbar-hidden #scroll-area { padding-top: 0; }
+  #browse-view, #detail-view { max-width: 860px; margin: 0 auto; padding: 16px 18px 40px; }
+
+  .picker { padding: 4px 2px 16px; }
+  .pill-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pill-btn {
+    display: inline-flex; align-items: center; gap: 8px; line-height: 1;
+    background: var(--pink-light); border: 1.5px solid var(--pink);
+    color: var(--pink-dark); font-family: "Quicksand", sans-serif; font-weight: 700;
+    font-size: 14.5px; padding: 6px 16px 6px 6px; border-radius: 999px; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .pill-icon { display: block; width: 26px; height: 26px; object-fit: contain; border-radius: 6px; background: #fff; padding: 2px; flex-shrink: 0; }
+  .pill-btn:hover { background: var(--pink); color: #fff; transform: translateY(-1px); }
+  .pill-btn.active { background: var(--pink-dark); color: #fff; border-color: var(--pink-dark);
+    box-shadow: 0 2px 6px rgba(214,51,108,0.35); }
+
+  .az-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+  .az-btn {
+    background: var(--green-light); border: 1.5px solid var(--green); color: var(--green-dark);
+    font-family: "Baloo 2", cursive; font-weight: 700; font-size: 14.5px; line-height: 1;
+    padding: 8px 0; border-radius: 9px; cursor: pointer; transition: all 0.15s;
+  }
+  .az-btn:hover { background: var(--green); color: #fff; }
+  .az-btn.active { background: var(--green-dark); color: #fff; border-color: var(--green-dark); }
+
+  #results-label {
+    font-family: "Baloo 2", cursive; font-weight: 700; color: var(--pink-dark);
+    font-size: 13.5px; padding: 4px 2px 10px;
+  }
+  /* Search-engine-style result rows: breadcrumb, big link-style title, snippet */
+  .result-item {
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
+    padding: 14px 6px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.15s;
+  }
+  .result-item:last-child { border-bottom: none; }
+  .result-item:hover { background: var(--panel-alt); }
+  .result-main { min-width: 0; }
+  .result-breadcrumb { font-size: 11.5px; color: var(--text-dim2); margin-bottom: 2px; }
+  .result-title { font-weight: 700; color: var(--green-dark); font-size: 16px; }
+  .result-item:hover .result-title { text-decoration: underline; }
+  .result-snippet { color: var(--text-dim2); font-size: 12.5px; margin-top: 4px; line-height: 1.5; }
+  .result-snippet .searchmatch { color: var(--pink-dark); font-weight: 700; font-style: normal; }
+  .heart-btn { background: none; border: none; font-size: 17px; cursor: pointer; line-height: 1; padding: 2px; flex-shrink: 0; }
+  .heart-btn.large { font-size: 23px; }
+  .heart-btn:hover { transform: scale(1.18); }
+
+  .empty-msg, .status-msg { padding: 18px 6px; color: var(--text-dim2); font-size: 13px; text-align: center; line-height: 1.5; }
+  .status-msg.error { color: var(--danger); }
+
+  /* ---------- Detail view ---------- */
+  #back-btn {
+    display: inline-flex; align-items: center; gap: 7px; line-height: 1;
+    background: var(--pink-light); border: 1.5px solid var(--pink); color: var(--pink-dark);
+    font-family: "Baloo 2", cursive; font-weight: 700; font-size: 14px;
+    padding: 8px 16px; border-radius: 999px; cursor: pointer; margin-bottom: 14px;
+  }
+  #back-btn:hover { background: var(--pink); color: #fff; }
+
+  #detail-title { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
+  #detail-title h2 { margin: 0; font-size: 24px; font-family: "Baloo 2", cursive; color: var(--pink-dark); }
+  #detail-title a {
+    font-size: 12px; color: var(--green-dark); font-weight: 700; text-decoration: none;
+    border-bottom: 2px solid var(--green-light); padding-bottom: 1px;
+  }
+  #detail-title a:hover { border-color: var(--green-dark); }
+  #variant-note { color: var(--text-dim2); font-size: 12px; margin-bottom: 14px; }
+
+  #wiki-content { font-size: 14.5px; line-height: 1.6; }
+  #wiki-content img { max-width: 100%; }
+  #wiki-content a { color: var(--green-dark); text-decoration: none; cursor: pointer; font-weight: 600; }
+  #wiki-content a:hover { color: var(--pink-dark); text-decoration: underline; }
+  #wiki-content h2, #wiki-content h3, #wiki-content h4 {
+    font-family: "Baloo 2", cursive; color: var(--green-dark);
+    border-bottom: 2px dotted var(--border); padding-bottom: 5px; margin-top: 30px;
+  }
+  /* Inline icons the wiki puts before/inside headings and prose default to baseline
+     alignment, which makes a 40-50px icon tower above a line of text — this pulls
+     every inline image onto the text's vertical center instead, and keeps heading
+     icons from overpowering the text next to them. */
+  #wiki-content img { vertical-align: middle; }
+  #wiki-content h2 img, #wiki-content h3 img, #wiki-content h4 img {
+    max-height: 1.3em; width: auto; margin-right: 4px;
+  }
+  #wiki-content table { border-collapse: collapse; margin: 10px 0; max-width: 100%; }
+  #wiki-content table:not(.pi-navigation) td, #wiki-content table:not(.pi-navigation) th {
+    border: 1px solid var(--border); padding: 6px 10px; font-size: 13px;
+  }
+  #wiki-content .mw-editsection, #wiki-content sup.reference, #wiki-content style,
+  #wiki-content p.mw-empty-elt { display: none; }
+
+  /* Quick Jump (the wiki's built-in table of contents, restyled) */
+  #wiki-content .toc {
+    background: var(--panel-alt); border: 2px solid var(--border); border-radius: 14px;
+    padding: 14px 18px; margin: 6px 0 22px; max-width: 340px;
+  }
+  #wiki-content .toc .toctitle h2 {
+    font-family: "Baloo 2", cursive; font-size: 14px; margin: 0 0 8px; color: var(--pink-dark);
+    border: none; padding: 0;
+  }
+  #wiki-content .toc .toctogglespan, #wiki-content .toc .toctogglecheckbox,
+  #wiki-content .toc .tocnumber { display: none; }
+  #wiki-content .toc ul { list-style: none; margin: 0; padding: 0; }
+  #wiki-content .toc ul ul { padding-left: 16px; margin-top: 4px; }
+  #wiki-content .toc li { margin: 5px 0; }
+  #wiki-content .toc a { color: var(--green-dark); font-weight: 600; font-size: 13px; text-decoration: none; }
+  #wiki-content .toc a:hover { color: var(--pink-dark); text-decoration: underline; }
+
+  /* Click-to-enlarge images */
+  #wiki-content img[data-zoomable] { cursor: zoom-in; }
+  .lightbox-overlay {
+    position: fixed; inset: 0; background: rgba(74,53,64,0.78); backdrop-filter: blur(2px);
+    display: flex; align-items: center; justify-content: center; z-index: 100; cursor: zoom-out; padding: 30px;
+  }
+  .lightbox-overlay img {
+    max-width: 90vw; max-height: 90vh; border-radius: 14px; background: var(--panel);
+    padding: 10px; box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+  }
+
+  /* Tabber widget (state galleries, version tabs) — reimplemented as pink/green pill tabs */
+  #wiki-content .tabber__header__prev, #wiki-content .tabber__header__next { display: none; }
+  #wiki-content .tabber__tabs { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; padding: 0; margin: 10px 0 0; }
+  #wiki-content .tabber__tab {
+    background: var(--pink-light); border: 1.5px solid var(--pink); color: var(--pink-dark);
+    font-weight: 700; font-size: 12.5px; padding: 6px 13px; border-radius: 999px;
+    text-decoration: none !important; cursor: pointer; display: inline-block;
+  }
+  #wiki-content .tabber__tab:hover { background: var(--pink); color: #fff; }
+  #wiki-content .tabber__tab--active { background: var(--pink-dark); color: #fff; border-color: var(--pink-dark); }
+  #wiki-content .tabber__section { margin-top: 10px; }
+  #wiki-content .tabber__panel { border: 1.5px solid var(--border); border-radius: 12px; padding: 12px 16px; background: var(--panel-alt); }
+
+  /* Portable infobox styling */
+  aside.portable-infobox {
+    float: right; width: 280px; margin: 0 0 16px 20px;
+    background: var(--panel); border: 2px solid var(--pink-light); border-radius: 16px;
+    padding: 10px; font-size: 13px;
+    box-shadow: var(--card-shadow);
+  }
+  #wiki-content aside.portable-infobox .pi-title {
+    font-family: "Baloo 2", cursive; font-size: 17px; font-weight: 700; text-align: center;
+    color: #fff; background: linear-gradient(120deg, var(--pink), var(--pink-dark));
+    border-radius: 13px 13px 0 0; margin: -10px -10px 10px; padding: 12px 10px;
+    border-bottom: none;
+  }
+  aside.portable-infobox .pi-header {
+    font-family: "Baloo 2", cursive; font-weight: 700; color: var(--green-dark);
+    margin: 12px 0 5px; font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.4px;
+    border-bottom: 2px dotted var(--green-light); padding-bottom: 4px;
+  }
+  /* Label always sits directly above its value, so multi-icon values (which are
+     too wide to fit beside the label) never wrap into an awkward stacked mess. */
+  aside.portable-infobox .pi-data {
+    display: flex; flex-direction: column; align-items: flex-start; gap: 5px;
+    padding: 7px 0; border-bottom: 1px dashed var(--border);
+  }
+  aside.portable-infobox .pi-data-label {
+    color: var(--text-dim2); font-weight: 700; font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.3px;
+  }
+  aside.portable-infobox .pi-data-value {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 5px;
+    text-align: left; color: var(--text); font-size: 13.5px;
+  }
+  aside.portable-infobox .pi-data-value img { vertical-align: middle; }
+  aside.portable-infobox figure { margin: 0 0 8px; text-align: center; }
+  aside.portable-infobox figure img { max-height: 160px; width: auto; }
+
+  /* Quick links (jump to recipe / jump to source) */
+  .quick-links { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+  .quick-link-btn {
+    display: inline-flex; align-items: center; line-height: 1;
+    font-family: "Baloo 2", cursive; font-weight: 700; font-size: 14.5px;
+    padding: 10px 18px; border-radius: 999px; cursor: pointer; border: none; color: #fff;
+  }
+  .quick-link-btn.recipe { background: linear-gradient(100deg, var(--green), var(--green-dark)); }
+  .quick-link-btn.source { background: linear-gradient(100deg, var(--pink), var(--pink-dark)); }
+  .quick-link-btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
+  @keyframes quickPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(214,51,108,0); }
+    30% { box-shadow: 0 0 0 8px rgba(214,51,108,0.35); }
+  }
+  .quick-highlight { animation: quickPulse 1.3s ease; border-radius: 14px; }
+
+  /* Trimmed image gallery */
+  #wiki-content ul.gallery { display: flex; flex-wrap: wrap; gap: 10px; list-style: none; padding: 0; margin: 14px 0; }
+  #wiki-content .gallerybox { border: 2px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--panel); padding: 6px; }
+  #wiki-content .gallerybox img { border-radius: 6px; }
+
+  #scroll-area::-webkit-scrollbar { width: 10px; }
+  #scroll-area::-webkit-scrollbar-thumb { background: var(--pink-light); border-radius: 10px; }
+  #scroll-area::-webkit-scrollbar-track { background: transparent; }
+
+  @media (max-width: 600px) {
+    aside.portable-infobox { float: none; width: 100%; margin: 0 0 16px; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="landing-view">
+    <button id="landing-settings-btn" class="corner-settings-btn" title="Appearance settings" aria-label="Appearance settings">&#9881;&#65039;</button>
+    <div class="landing-center">
+      <h1 class="landing-logo">&#127804; DST Guide &#127801;</h1>
+      <div class="landing-tagline">your cozy little guide to the Constant</div>
+      <div class="game-mode-switch">
+        <button class="game-mode-btn" data-mode="dst">&#127918; Don't Starve Together</button>
+        <button class="game-mode-btn" data-mode="general">&#127760; All Don't Starve</button>
+      </div>
+      <div class="landing-search-row">
+        <span class="landing-search-icon">&#128269;</span>
+        <input id="landing-search-box" type="text" placeholder="Ask anything about Don't Starve Together…" autocomplete="off">
+      </div>
+      <div class="landing-actions">
+        <button id="landing-search-btn">Search the Wiki</button>
+        <button id="landing-surprise-btn">&#127808; Surprise Me</button>
+      </div>
+      <div class="landing-links">
+        <button class="landing-link" data-tab="category">&#128193; Categories</button>
+        <button class="landing-link" data-tab="az">&#128292; A-Z</button>
+        <button class="landing-link" data-tab="favorites">&#128149; Favorites</button>
+        <button class="landing-link" data-tab="recent">&#128337; Recent</button>
+      </div>
+    </div>
+    <footer class="landing-credit">
+      Content from the <a href="https://dontstarve.wiki.gg" target="_blank" rel="noopener">Don't Starve Wiki</a>,
+      licensed <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>.
+      Fan-made; not affiliated with Klei Entertainment.
+    </footer>
+  </div>
+
+  <div id="toolbar-hover-zone"></div>
+  <div id="toolbar" hidden>
+    <header>
+      <button class="brand" id="home-logo-btn" title="Back to home">
+        <h1>&#127804; DST Guide &#127801;</h1>
+        <div class="tagline">your cozy little guide to the Constant</div>
+      </button>
+      <input id="search-box" type="text" placeholder="Search…" autocomplete="off">
+      <div id="browse-menu-wrap">
+        <button id="browse-menu-btn" title="Browse">&#9776; <span id="browse-menu-label">Browse</span></button>
+        <nav id="tab-bar" hidden>
+          <button class="tab-btn active" data-tab="category">&#128193; Categories</button>
+          <button class="tab-btn" data-tab="az">&#128292; A-Z</button>
+          <button class="tab-btn" data-tab="favorites">&#128149; Favorites</button>
+          <button class="tab-btn" data-tab="recent">&#128337; Recent</button>
+          <button class="tab-btn" data-tab="random">&#127808; Surprise Me</button>
+        </nav>
+      </div>
+      <button id="settings-btn" class="corner-settings-btn" title="Appearance settings" aria-label="Appearance settings">&#9881;&#65039;</button>
+    </header>
+  </div>
+
+  <div id="settings-panel" hidden>
+    <div class="settings-row settings-row-stack">
+      <span class="settings-label">Game info</span>
+      <div class="game-mode-switch game-mode-switch-compact">
+        <button class="game-mode-btn" data-mode="dst">&#127918; DST Only</button>
+        <button class="game-mode-btn" data-mode="general">&#127760; All Don't Starve</button>
+      </div>
+    </div>
+    <div class="settings-row">
+      <span class="settings-label">&#127769; Dark mode</span>
+      <label class="switch">
+        <input type="checkbox" id="dark-mode-toggle">
+        <span class="switch-track"><span class="switch-thumb"></span></span>
+      </label>
+    </div>
+    <div class="settings-row">
+      <span class="settings-label">Background</span>
+      <input type="color" id="color-bg" class="color-swatch">
+    </div>
+    <div class="settings-row">
+      <span class="settings-label">Pink accent</span>
+      <input type="color" id="color-pink" class="color-swatch">
+    </div>
+    <div class="settings-row">
+      <span class="settings-label">Green accent</span>
+      <input type="color" id="color-green" class="color-swatch">
+    </div>
+    <button id="reset-colors-btn">&#8634; Reset to default</button>
+  </div>
+
+  <div id="scroll-area" hidden>
+    <div id="browse-view">
+      <div class="picker" id="picker-category">
+        <div class="pill-grid" id="category-pills"></div>
+      </div>
+      <div class="picker" id="picker-az" hidden>
+        <div class="az-grid" id="az-grid"></div>
+      </div>
+      <div id="results-label">Browse or search above</div>
+      <div id="results-list">
+        <div class="empty-msg">Search for anything — Wilson, Spider, Torch, Crock Pot — pick a category, or browse A-Z. Results show up here!</div>
+      </div>
+    </div>
+
+    <div id="detail-view" hidden>
+      <button id="back-btn">&#8592; Back to results</button>
+      <div id="content"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'https://dontstarve.wiki.gg/api.php';
+const WIKI = 'https://dontstarve.wiki.gg';
+const FAV_KEY = 'dst-info-favorites';
+const RECENT_KEY = 'dst-info-recent';
+const THEME_KEY = 'dst-info-theme';
+const COLORS_KEY = 'dst-info-custom-colors';
+const GAME_MODE_KEY = 'dst-info-game-mode';
+
+/* ---------- Game mode: "dst" (prefer DST-specific pages) vs "general" (Don't Starve /
+   all-games pages, skipping the DST lookup entirely) ---------- */
+function getGameMode() {
+  try { return localStorage.getItem(GAME_MODE_KEY) || 'dst'; } catch (e) { return 'dst'; }
+}
+function saveGameMode(mode) {
+  try { localStorage.setItem(GAME_MODE_KEY, mode); } catch (e) { /* ignore */ }
+}
+function applyGameMode(mode) {
+  document.querySelectorAll('.game-mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+}
+function setGameMode(mode) {
+  saveGameMode(mode);
+  applyGameMode(mode);
+}
+document.querySelectorAll('.game-mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => setGameMode(btn.dataset.mode));
+});
+applyGameMode(getGameMode());
+
+const CATEGORIES = [
+  { cat: 'Category:Characters',      label: 'Characters',      icon: 'Wilson_Portrait.png' },
+  { cat: 'Category:Mobs',            label: 'Mobs',             icon: 'Spider.png' },
+  { cat: 'Category:Craftable Items', label: 'Craftable Items',  icon: 'Axe.png' },
+  { cat: 'Category:Structures',      label: 'Structures',       icon: 'Science_Machine.png' },
+  { cat: 'Category:Food',            label: 'Food',             icon: 'Crock_Pot.png' },
+  { cat: 'Category:Ocean',           label: 'Ocean',             icon: 'Row_Boat.png' },
+  { cat: 'Category:Weapons',         label: 'Weapons',           icon: 'Spear.png' },
+  { cat: 'Category:Armor',           label: 'Armor',             icon: 'Football_Helmet.png' },
+  { cat: 'Category:Healing',         label: 'Healing',           icon: 'Healing_Salve.png' },
+  { cat: 'Category:Light Sources',   label: 'Light Sources',     icon: 'Torch.png' }
+];
+
+const searchBox = document.getElementById('search-box');
+const resultsList = document.getElementById('results-list');
+const resultsLabel = document.getElementById('results-label');
+const content = document.getElementById('content');
+const azGrid = document.getElementById('az-grid');
+const categoryPills = document.getElementById('category-pills');
+const pickerCategory = document.getElementById('picker-category');
+const pickerAz = document.getElementById('picker-az');
+const browseView = document.getElementById('browse-view');
+const detailView = document.getElementById('detail-view');
+const backBtn = document.getElementById('back-btn');
+const scrollArea = document.getElementById('scroll-area');
+
+let searchTimer = null;
+let currentReqId = 0;
+
+function apiUrl(params) {
+  const usp = new URLSearchParams(Object.assign({ format: 'json', formatversion: '2', origin: '*' }, params));
+  return `${API}?${usp.toString()}`;
+}
+
+async function apiGet(params) {
+  const res = await fetch(apiUrl(params));
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+function setResultsLabel(text) { resultsLabel.textContent = text; }
+
+/* ---------- View switching: browse (list) vs detail (article) ---------- */
+function showDetailView() {
+  browseView.hidden = true;
+  detailView.hidden = false;
+  scrollArea.scrollTop = 0;
+  resetToolbarScrollState();
+}
+function showBrowseView() {
+  detailView.hidden = true;
+  browseView.hidden = false;
+}
+backBtn.addEventListener('click', showBrowseView);
+
+/* ---------- Landing page vs. results mode ---------- */
+const appEl = document.getElementById('app');
+const landingView = document.getElementById('landing-view');
+const toolbar = document.getElementById('toolbar');
+function showLanding() {
+  toolbar.hidden = true;
+  scrollArea.hidden = true;
+  landingView.hidden = false;
+  document.getElementById('landing-search-box').value = '';
+}
+function showResultsMode() {
+  landingView.hidden = true;
+  toolbar.hidden = false;
+  scrollArea.hidden = false;
+  updateToolbarHeightVar();
+  resetToolbarScrollState();
+}
+document.getElementById('home-logo-btn').addEventListener('click', showLanding);
+
+/* ---------- Auto-hide toolbar: hides on scroll-down, reveals on scroll-up or hover-near-top ----------
+   The toolbar is `position: fixed` (out of document flow) so it can hide without leaving behind the
+   blank space it used to occupy; #scroll-area's padding-top (driven by --toolbar-h) reclaims that
+   space in sync with the toolbar's own slide animation. */
+let lastScrollTop = 0;
+let scrolledPastThreshold = false;
+function updateToolbarHeightVar() {
+  if (!toolbar.hidden) appEl.style.setProperty('--toolbar-h', toolbar.offsetHeight + 'px');
+}
+window.addEventListener('resize', updateToolbarHeightVar);
+function resetToolbarScrollState() {
+  lastScrollTop = scrollArea.scrollTop;
+  scrolledPastThreshold = false;
+  appEl.classList.remove('toolbar-hidden');
+}
+scrollArea.addEventListener('scroll', () => {
+  const st = scrollArea.scrollTop;
+  if (st > lastScrollTop && st > 60) {
+    scrolledPastThreshold = true;
+    appEl.classList.add('toolbar-hidden');
+    settingsPanel.hidden = true;
+    closeBrowseMenu();
+  } else if (st < lastScrollTop) {
+    scrolledPastThreshold = false;
+    appEl.classList.remove('toolbar-hidden');
+  }
+  lastScrollTop = st;
+}, { passive: true });
+document.getElementById('toolbar-hover-zone').addEventListener('mouseenter', () => {
+  if (scrolledPastThreshold) appEl.classList.remove('toolbar-hidden');
+});
+toolbar.addEventListener('mouseleave', () => {
+  if (scrolledPastThreshold && settingsPanel.hidden) appEl.classList.add('toolbar-hidden');
+});
+
+/* ---------- Favorites & Recently Viewed (localStorage, best-effort) ---------- */
+function readList(key) {
+  try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch (e) { return []; }
+}
+function writeList(key, arr) {
+  try { localStorage.setItem(key, JSON.stringify(arr)); } catch (e) { /* storage unavailable, ignore */ }
+}
+function getFavorites() { return readList(FAV_KEY); }
+function isFavorite(title) { return getFavorites().includes(title); }
+function toggleFavorite(title) {
+  let favs = getFavorites();
+  if (favs.includes(title)) favs = favs.filter(t => t !== title);
+  else favs.unshift(title);
+  writeList(FAV_KEY, favs);
+  return favs.includes(title);
+}
+function getRecent() { return readList(RECENT_KEY); }
+function pushRecent(title) {
+  let recent = getRecent().filter(t => t !== title);
+  recent.unshift(title);
+  writeList(RECENT_KEY, recent.slice(0, 25));
+}
+
+/* ---------- Appearance: dark mode + custom accent colors ---------- */
+function hexToRgb(hex) {
+  const n = parseInt(hex.replace('#', ''), 16);
+  return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+}
+function rgbToHex(r, g, b) {
+  return '#' + [r, g, b].map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join('');
+}
+function mixHex(hex, towardHex, amount) {
+  const a = hexToRgb(hex), b = hexToRgb(towardHex);
+  return rgbToHex(a.r + (b.r - a.r) * amount, a.g + (b.g - a.g) * amount, a.b + (b.b - a.b) * amount);
+}
+function applyAccentColor(prefix, hex) {
+  const root = document.documentElement.style;
+  root.setProperty(`--${prefix}`, hex);
+  root.setProperty(`--${prefix}-dark`, mixHex(hex, '#000000', 0.35));
+  root.setProperty(`--${prefix}-light`, mixHex(hex, '#ffffff', 0.85));
+}
+
+function getSavedTheme() { try { return localStorage.getItem(THEME_KEY); } catch (e) { return null; } }
+function saveTheme(theme) {
+  try { theme ? localStorage.setItem(THEME_KEY, theme) : localStorage.removeItem(THEME_KEY); } catch (e) { /* ignore */ }
+}
+function applyTheme(theme) {
+  if (theme === 'dark' || theme === 'light') document.documentElement.setAttribute('data-theme', theme);
+  else document.documentElement.removeAttribute('data-theme');
+}
+function isDarkActive() {
+  const attr = document.documentElement.getAttribute('data-theme');
+  if (attr === 'dark') return true;
+  if (attr === 'light') return false;
+  return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+}
+
+function loadCustomColors() { try { return JSON.parse(localStorage.getItem(COLORS_KEY) || 'null'); } catch (e) { return null; } }
+function saveCustomColors() {
+  const data = {
+    bg: document.getElementById('color-bg').value,
+    pink: document.getElementById('color-pink').value,
+    green: document.getElementById('color-green').value
+  };
+  try { localStorage.setItem(COLORS_KEY, JSON.stringify(data)); } catch (e) { /* ignore */ }
+}
+function applyCustomColors(custom) {
+  if (!custom) return;
+  const root = document.documentElement.style;
+  if (custom.bg) { root.setProperty('--bg', custom.bg); root.setProperty('--bg-gradient', custom.bg); }
+  if (custom.pink) applyAccentColor('pink', custom.pink);
+  if (custom.green) applyAccentColor('green', custom.green);
+}
+function initColorInputs() {
+  const cs = getComputedStyle(document.documentElement);
+  const bgInput = document.getElementById('color-bg');
+  const pinkInput = document.getElementById('color-pink');
+  const greenInput = document.getElementById('color-green');
+  const bg = cs.getPropertyValue('--bg').trim();
+  bgInput.value = /^#[0-9a-f]{6}$/i.test(bg) ? bg : '#fff8fa';
+  pinkInput.value = cs.getPropertyValue('--pink').trim() || '#ff8fb3';
+  greenInput.value = cs.getPropertyValue('--green').trim() || '#63c58a';
+}
+
+applyTheme(getSavedTheme());
+applyCustomColors(loadCustomColors());
+
+const settingsPanel = document.getElementById('settings-panel');
+function toggleSettingsPanel() {
+  settingsPanel.hidden = !settingsPanel.hidden;
+  if (!settingsPanel.hidden) initColorInputs();
+}
+document.getElementById('settings-btn').addEventListener('click', toggleSettingsPanel);
+document.getElementById('landing-settings-btn').addEventListener('click', toggleSettingsPanel);
+
+const darkModeToggle = document.getElementById('dark-mode-toggle');
+darkModeToggle.checked = isDarkActive();
+darkModeToggle.addEventListener('change', () => {
+  const theme = darkModeToggle.checked ? 'dark' : 'light';
+  applyTheme(theme);
+  saveTheme(theme);
+  if (!loadCustomColors()) initColorInputs(); // reflect the new theme's defaults, unless user already customized
+});
+
+document.getElementById('color-bg').addEventListener('input', (e) => {
+  document.documentElement.style.setProperty('--bg', e.target.value);
+  document.documentElement.style.setProperty('--bg-gradient', e.target.value);
+  saveCustomColors();
+});
+document.getElementById('color-pink').addEventListener('input', (e) => {
+  applyAccentColor('pink', e.target.value);
+  saveCustomColors();
+});
+document.getElementById('color-green').addEventListener('input', (e) => {
+  applyAccentColor('green', e.target.value);
+  saveCustomColors();
+});
+document.getElementById('reset-colors-btn').addEventListener('click', () => {
+  const root = document.documentElement.style;
+  ['--bg', '--bg-gradient', '--pink', '--pink-dark', '--pink-light', '--green', '--green-dark', '--green-light']
+    .forEach(v => root.removeProperty(v));
+  try { localStorage.removeItem(COLORS_KEY); } catch (e) { /* ignore */ }
+  initColorInputs();
+});
+initColorInputs();
+
+/* ---------- Tab bar (Categories / A-Z / Favorites / Recent / Surprise) ---------- */
+const tabBtns = document.querySelectorAll('#tab-bar .tab-btn');
+const BROWSE_LABELS = { category: 'Categories', az: 'A-Z', favorites: 'Favorites', recent: 'Recent' };
+function setActiveTab(name) {
+  tabBtns.forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+  document.getElementById('browse-menu-label').textContent = BROWSE_LABELS[name] || 'Browse';
+}
+
+/* ---------- Browse dropdown (Categories / A-Z / Favorites / Recent / Surprise) ---------- */
+const browseMenuBtn = document.getElementById('browse-menu-btn');
+const browseMenu = document.getElementById('tab-bar');
+function closeBrowseMenu() { browseMenu.hidden = true; }
+browseMenuBtn.addEventListener('click', (ev) => {
+  ev.stopPropagation();
+  browseMenu.hidden = !browseMenu.hidden;
+});
+document.addEventListener('click', (ev) => {
+  if (!browseMenu.hidden && !browseMenu.contains(ev.target) && ev.target !== browseMenuBtn) closeBrowseMenu();
+});
+
+CATEGORIES.forEach(c => {
+  const btn = document.createElement('button');
+  btn.className = 'pill-btn';
+  btn.innerHTML = `<img class="pill-icon" src="${WIKI}/images/${c.icon}" alt=""> ${escapeHtml(c.label)}`;
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#category-pills .pill-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    searchBox.value = '';
+    runCategoryBrowse(c.cat, c.label);
+  });
+  categoryPills.appendChild(btn);
+});
+
+'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(letter => {
+  const btn = document.createElement('button');
+  btn.className = 'az-btn';
+  btn.textContent = letter;
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#az-grid .az-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    searchBox.value = '';
+    runLetterBrowse(letter);
+  });
+  azGrid.appendChild(btn);
+});
+
+tabBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tab = btn.dataset.tab;
+    closeBrowseMenu();
+    showBrowseView();
+    searchBox.value = '';
+    setActiveTab(tab);
+    pickerCategory.hidden = tab !== 'category';
+    pickerAz.hidden = tab !== 'az';
+
+    if (tab === 'category') {
+      setResultsLabel('📁 Pick a category');
+      resultsList.innerHTML = '<div class="empty-msg">Tap a category above to see everything in it!</div>';
+    } else if (tab === 'az') {
+      setResultsLabel('🔤 Pick a letter');
+      resultsList.innerHTML = '<div class="empty-msg">Tap a letter above to browse pages alphabetically!</div>';
+    } else if (tab === 'favorites') {
+      showFavorites();
+    } else if (tab === 'recent') {
+      showRecent();
+    } else if (tab === 'random') {
+      runRandom();
+    }
+  });
+});
+
+/* ---------- Search box ---------- */
+searchBox.addEventListener('input', () => {
+  setActiveTab(null);
+  showBrowseView();
+  pickerCategory.hidden = true;
+  pickerAz.hidden = true;
+  const q = searchBox.value.trim();
+  clearTimeout(searchTimer);
+  if (q.length < 2) {
+    setResultsLabel('🌸 Browse or search above');
+    resultsList.innerHTML = '<div class="empty-msg">Search for anything — Wilson, Spider, Torch, Crock Pot — pick a category, or browse A-Z. Results show up here!</div>';
+    return;
+  }
+  searchTimer = setTimeout(() => runSearch(q), 300);
+});
+
+/* ---------- Landing page: search box + quick links ---------- */
+const landingSearchBox = document.getElementById('landing-search-box');
+function submitLandingSearch() {
+  const q = landingSearchBox.value.trim();
+  if (!q) return;
+  showResultsMode();
+  setActiveTab(null);
+  showBrowseView();
+  pickerCategory.hidden = true;
+  pickerAz.hidden = true;
+  searchBox.value = q;
+  runSearch(q);
+}
+landingSearchBox.addEventListener('keydown', (ev) => {
+  if (ev.key === 'Enter') submitLandingSearch();
+});
+document.getElementById('landing-search-btn').addEventListener('click', submitLandingSearch);
+document.getElementById('landing-surprise-btn').addEventListener('click', () => {
+  showResultsMode();
+  runRandom();
+});
+document.querySelectorAll('.landing-link').forEach(link => {
+  link.addEventListener('click', () => {
+    showResultsMode();
+    const targetTab = [...tabBtns].find(b => b.dataset.tab === link.dataset.tab);
+    if (targetTab) targetTab.click();
+  });
+});
+
+// Question-style searches ("how do I make a grass suit?") need their filler words
+// stripped before hitting the wiki's search index — words like "how", "make", "beat"
+// or "stay" appear on nearly every page, so left in they drown out the one word that
+// actually identifies the page ("grass suit", "deerclops", "backpack"...).
+const SEARCH_FILLER_WORDS = new Set([
+  'a', 'an', 'the', 'how', 'to', 'do', 'does', 'did', 'doing', 'i', 'you', 'we', 'they', 'he', 'she', 'it',
+  'my', 'your', 'our', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'for', 'of', 'in', 'on', 'at', 'with',
+  'and', 'or', 'so', 'if', 'can', 'could', 'would', 'should', 'will', 'shall', 'what', 'where', 'when', 'which',
+  'who', 'whom', 'that', 'this', 'these', 'those', 'there', 'here', 'me', 'us', 'them', 'him', 'her',
+  'make', 'made', 'making', 'get', 'gets', 'getting', 'got', 'craft', 'crafting', 'crafted',
+  'build', 'building', 'built', 'beat', 'beating', 'kill', 'killing', 'defeat', 'defeating',
+  'find', 'finding', 'need', 'needing', 'needed', 'want', 'wanting', 'stay', 'staying',
+  'have', 'having', 'use', 'using', 'used', 'obtain', 'obtaining', 'acquire', 'survive', 'surviving',
+  'fight', 'fighting'
+]);
+function cleanSearchQuery(q) {
+  const words = q.trim().split(/\s+/).filter(w => w && !SEARCH_FILLER_WORDS.has(w.toLowerCase()));
+  return words.length ? words.join(' ') : q.trim();
+}
+
+async function runSearch(query) {
+  const reqId = ++currentReqId;
+  setResultsLabel(`🔍 Results for "${query}"`);
+  resultsList.innerHTML = '<div class="status-msg">Searching…</div>';
+  try {
+    const cleaned = cleanSearchQuery(query);
+    // prefixsearch matches partial words as you type ("wilso" -> "Wilson"), the way a
+    // real autocomplete should; full-text search catches everything else (concepts,
+    // whole-word matches inside articles) that a prefix match alone would miss.
+    const [prefixData, textData] = await Promise.all([
+      apiGet({ action: 'query', list: 'prefixsearch', pssearch: cleaned, psnamespace: '0', pslimit: '12' }),
+      apiGet({ action: 'query', list: 'search', srsearch: cleaned, srnamespace: '0', srlimit: '20' })
+    ]);
+    if (reqId !== currentReqId) return;
+    const seen = new Set();
+    const items = [];
+    prefixData.query.prefixsearch
+      .filter(p => !p.title.includes('/'))
+      .sort((a, b) => a.title.length - b.title.length) // closest/shortest match first
+      .forEach(p => {
+      if (seen.has(p.title)) return;
+      seen.add(p.title);
+      items.push({ title: p.title, snippet: '' });
+    });
+    textData.query.search.filter(s => !s.title.includes('/')).forEach(s => {
+      if (seen.has(s.title)) return;
+      seen.add(s.title);
+      items.push({ title: s.title, snippet: s.snippet });
+    });
+    renderResultList(items);
+  } catch (e) {
+    if (reqId !== currentReqId) return;
+    resultsList.innerHTML = `<div class="status-msg error">Search failed: ${escapeHtml(e.message)}</div>`;
+  }
+}
+
+async function runCategoryBrowse(category, label) {
+  const reqId = ++currentReqId;
+  setResultsLabel(label);
+  resultsList.innerHTML = `<div class="status-msg">Loading ${escapeHtml(label)}…</div>`;
+  try {
+    const data = await apiGet({ action: 'query', list: 'categorymembers', cmtitle: category, cmnamespace: '0', cmlimit: '75' });
+    if (reqId !== currentReqId) return;
+    const members = data.query.categorymembers
+      .filter(m => !m.title.endsWith('/DST') && m.title !== category.replace('Category:', ''))
+      .sort((a, b) => a.title.localeCompare(b.title));
+    renderResultList(members.map(m => ({ title: m.title, snippet: '' })));
+  } catch (e) {
+    if (reqId !== currentReqId) return;
+    resultsList.innerHTML = `<div class="status-msg error">Couldn't load category: ${escapeHtml(e.message)}</div>`;
+  }
+}
+
+async function runLetterBrowse(letter) {
+  const reqId = ++currentReqId;
+  resultsList.innerHTML = '<div class="status-msg">Loading…</div>';
+  try {
+    const data = await apiGet({
+      action: 'query', list: 'allpages', apprefix: letter, apnamespace: '0',
+      apfilterredir: 'nonredirects', aplimit: '60'
+    });
+    if (reqId !== currentReqId) return;
+    const raw = data.query.allpages;
+    setResultsLabel(`🔤 Starting with "${letter}"${raw.length >= 60 ? ' (first 60)' : ''}`);
+    const items = raw
+      .map(p => p.title)
+      .filter(t => !t.endsWith('/DST'))
+      .sort((a, b) => a.localeCompare(b))
+      .map(t => ({ title: t, snippet: '' }));
+    renderResultList(items);
+  } catch (e) {
+    if (reqId !== currentReqId) return;
+    resultsList.innerHTML = `<div class="status-msg error">Couldn't load: ${escapeHtml(e.message)}</div>`;
+  }
+}
+
+function showFavorites() {
+  setResultsLabel('💗 Your Favorites');
+  const favs = getFavorites();
+  if (!favs.length) {
+    resultsList.innerHTML = '<div class="empty-msg">No favorites yet — tap the heart on anything you love! 💗</div>';
+    return;
+  }
+  renderResultList(favs.map(t => ({ title: t, snippet: '' })));
+}
+
+function showRecent() {
+  setResultsLabel('🕐 Recently Viewed');
+  const recent = getRecent();
+  if (!recent.length) {
+    resultsList.innerHTML = '<div class="empty-msg">Nothing viewed yet — start exploring! 🌸</div>';
+    return;
+  }
+  renderResultList(recent.map(t => ({ title: t, snippet: '' })));
+}
+
+async function runRandom() {
+  setResultsLabel('🎁 Surprise!');
+  resultsList.innerHTML = '<div class="status-msg">Rolling the dice…</div>';
+  try {
+    const data = await apiGet({ action: 'query', list: 'random', rnnamespace: '0', rnlimit: '1' });
+    const page = data.query.random[0];
+    resultsList.innerHTML = '<div class="empty-msg">Feeling lucky? Hit Surprise Me again! 🍀</div>';
+    loadPage(page.title);
+  } catch (e) {
+    resultsList.innerHTML = `<div class="status-msg error">Couldn't fetch a random page: ${escapeHtml(e.message)}</div>`;
+  }
+}
+
+/* ---------- Result list rendering ---------- */
+function renderResultList(rawItems) {
+  const items = rawItems.map(i => ({ title: i.title.replace(/\/DST$/, ''), snippet: i.snippet }));
+  if (!items.length) {
+    resultsList.innerHTML = '<div class="empty-msg">No results found. Try another search! 🌷</div>';
+    return;
+  }
+  resultsList.innerHTML = '';
+  const frag = document.createDocumentFragment();
+  items.forEach(item => {
+    const el = document.createElement('div');
+    el.className = 'result-item';
+
+    const main = document.createElement('div');
+    main.className = 'result-main';
+    main.innerHTML =
+      `<div class="result-breadcrumb">🌼 dontstarve.wiki.gg › ${escapeHtml(item.title)}</div>` +
+      `<div class="result-title">${escapeHtml(item.title)}</div>` +
+      (item.snippet ? `<div class="result-snippet">${item.snippet}</div>` : '');
+    el.appendChild(main);
+
+    const heartBtn = document.createElement('button');
+    heartBtn.className = 'heart-btn';
+    heartBtn.title = 'Save to favorites';
+    heartBtn.textContent = isFavorite(item.title) ? '💗' : '🤍';
+    heartBtn.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      const nowFav = toggleFavorite(item.title);
+      heartBtn.textContent = nowFav ? '💗' : '🤍';
+    });
+    el.appendChild(heartBtn);
+
+    el.addEventListener('click', () => loadPage(item.title));
+    frag.appendChild(el);
+  });
+  resultsList.appendChild(frag);
+}
+
+/* ---------- Page loading ---------- */
+async function parsePage(title) {
+  const data = await apiGet({ action: 'parse', page: title, prop: 'text|displaytitle', redirects: '1' });
+  if (data.error) return null;
+  return data.parse;
+}
+
+async function loadPage(title) {
+  const reqId = ++currentReqId;
+  showDetailView();
+  content.innerHTML = `<div class="status-msg">Loading ${escapeHtml(title)}…</div>`;
+
+  const baseTitle = title.replace(/\/DST$/, '');
+  const dstTitle = `${baseTitle}/DST`;
+  const gameMode = getGameMode();
+
+  let parsed = null;
+  let usedTitle = baseTitle;
+  let hasDstVariant = false;
+
+  try {
+    if (gameMode === 'dst') {
+      const dstParsed = await parsePage(dstTitle);
+      if (dstParsed) {
+        parsed = dstParsed;
+        usedTitle = dstTitle;
+        hasDstVariant = true;
+      } else {
+        parsed = await parsePage(baseTitle);
+      }
+    } else {
+      parsed = await parsePage(baseTitle);
+    }
+  } catch (e) {
+    if (reqId !== currentReqId) return;
+    content.innerHTML = `<div class="status-msg error">Couldn't load page: ${escapeHtml(e.message)}</div>`;
+    return;
+  }
+
+  if (reqId !== currentReqId) return;
+
+  if (!parsed) {
+    content.innerHTML = `<div class="status-msg error">No wiki page found for "${escapeHtml(title)}".
+      <br><a href="${WIKI}/index.php?search=${encodeURIComponent(title)}" target="_blank" rel="noopener">Search the wiki directly &#8594;</a></div>`;
+    return;
+  }
+
+  pushRecent(baseTitle);
+  renderPage(parsed, baseTitle, hasDstVariant, usedTitle, gameMode);
+}
+
+/* Pull the wiki's "reaction quotes" widget out of the article and hand back
+   clean {portrait, text, speaker} data — its own markup relies on the wiki's
+   CSS (position:relative on the container) that we don't load, so left in
+   place it renders as a pile of icons stuck to the top-left of the page. */
+function extractQuotes(wrapper) {
+  const quotes = [];
+  wrapper.querySelectorAll('.DSWHoverTabContainer').forEach(container => {
+    container.querySelectorAll(':scope > .DSWHoverTab').forEach(tab => {
+      const portraitImg = tab.querySelector('.DSWHoverTabSelector img');
+      const quoteSpan = tab.querySelector('.DSWHoverTabContent span');
+      const speakerLink = tab.querySelector('.DSWHoverTabContent a');
+      if (!quoteSpan || !quoteSpan.textContent.trim()) return;
+      quotes.push({
+        portrait: portraitImg ? portraitImg.getAttribute('src') : null,
+        text: quoteSpan.textContent.trim(),
+        speaker: speakerLink ? speakerLink.textContent.trim() : ''
+      });
+    });
+    container.remove();
+  });
+  return quotes;
+}
+
+/* Strip the wiki's game-version / subpage nav (the "wood sign" buttons, e.g.
+   "Don't Starve" / "Together") out of the article entirely — not worth keeping. */
+function removePageNav(wrapper) {
+  const marker = wrapper.querySelector('img[alt^="Ui button variant"]');
+  if (!marker) return;
+  const container = marker.closest('.noexcerpt');
+  if (container) container.remove();
+}
+
+// Find the infobox group (a "Crafting"/"Source"/etc. header plus its data rows) whose
+// header text matches one of the given names, so a quick-link button can jump to it.
+function findInfoboxSection(aside, headerNames) {
+  const headers = [...aside.querySelectorAll('.pi-header')];
+  const match = headers.find(h => headerNames.includes(h.textContent.trim().toLowerCase()));
+  if (!match) return null;
+  return match.closest('section.pi-item.pi-group') || match.parentElement;
+}
+
+function jumpToSection(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  el.classList.add('quick-highlight');
+  setTimeout(() => el.classList.remove('quick-highlight'), 1300);
+}
+
+function openLightbox(src, alt) {
+  const overlay = document.createElement('div');
+  overlay.className = 'lightbox-overlay';
+  const img = document.createElement('img');
+  img.src = src;
+  img.alt = alt || '';
+  overlay.appendChild(img);
+  overlay.addEventListener('click', () => overlay.remove());
+  document.body.appendChild(overlay);
+}
+
+function renderPage(parsed, baseTitle, hasDstVariant, usedTitle, gameMode) {
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = parsed.text;
+
+  extractQuotes(wrapper);
+  removePageNav(wrapper);
+
+  const tocHeading = wrapper.querySelector('#mw-toc-heading');
+  if (tocHeading) tocHeading.textContent = '📑 Quick Jump';
+
+  // Image galleries can run 30-50 pictures deep (every skin/screenshot ever added) —
+  // keep just the first couple as a taste, not a wall of thumbnails.
+  wrapper.querySelectorAll('ul.gallery').forEach(gallery => {
+    [...gallery.querySelectorAll(':scope > li.gallerybox')].slice(2).forEach(li => li.remove());
+  });
+
+  // Detect whether this item has a "Crafting"/"Cooking" section (it can be made) and/or
+  // a "Source" section (it's found/dropped/mined) so we can offer a quick-jump button.
+  const aside = wrapper.querySelector('aside.portable-infobox');
+  let craftingSection = null;
+  let sourceSection = null;
+  if (aside) {
+    craftingSection = findInfoboxSection(aside, ['crafting', 'cooking info']);
+    sourceSection = findInfoboxSection(aside, ['source']);
+    if (craftingSection) craftingSection.id = 'quick-crafting-section';
+    if (sourceSection) sourceSection.id = 'quick-source-section';
+  }
+
+  // Rewrite relative links/images to absolute, and make internal wiki links load in-app
+  wrapper.querySelectorAll('img').forEach(img => {
+    const src = img.getAttribute('src');
+    if (src && src.startsWith('/')) img.src = WIKI + src;
+    img.removeAttribute('srcset'); // relative srcset URLs resolve against file:// and break
+    const w = parseInt(img.getAttribute('width') || '0', 10);
+    if (w >= 80) {
+      img.setAttribute('data-zoomable', '1');
+      img.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation(); // don't also trigger a wrapping link (e.g. the File: page link)
+        openLightbox(img.src, img.alt);
+      });
+    }
+  });
+  wrapper.querySelectorAll('a[href^="/wiki/"]').forEach(a => {
+    const raw = a.getAttribute('href').replace('/wiki/', '').split('#')[0].split('?')[0];
+    const target = decodeURIComponent(raw);
+    if (!target) return;
+    a.href = 'javascript:void(0)';
+    a.addEventListener('click', (ev) => { ev.preventDefault(); loadPage(target); });
+  });
+  wrapper.querySelectorAll('a[href^="/"]').forEach(a => {
+    if (a.getAttribute('href').startsWith('/wiki/')) return;
+    a.href = WIKI + a.getAttribute('href');
+    a.target = '_blank';
+    a.rel = 'noopener';
+  });
+
+  // Reimplement the wiki's "Tabber" widget ourselves (its own JS isn't loaded, so
+  // without this every tab's content would just stack on top of each other)
+  wrapper.querySelectorAll('.tabber').forEach(tabber => {
+    const tabs = tabber.querySelectorAll(':scope > header.tabber__header .tabber__tab');
+    const panels = tabber.querySelectorAll(':scope > section.tabber__section > .tabber__panel');
+    if (!tabs.length || !panels.length) return;
+    panels.forEach((p, i) => { p.style.display = i === 0 ? '' : 'none'; });
+    tabs.forEach((tab, i) => {
+      tab.classList.toggle('tabber__tab--active', i === 0);
+      tab.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        const targetId = tab.getAttribute('href').slice(1);
+        tabs.forEach(t => t.classList.remove('tabber__tab--active'));
+        tab.classList.add('tabber__tab--active');
+        panels.forEach(p => { p.style.display = (p.id === targetId) ? '' : 'none'; });
+      });
+    });
+  });
+
+  content.innerHTML = '';
+
+  const titleRow = document.createElement('div');
+  titleRow.id = 'detail-title';
+
+  const h2 = document.createElement('h2');
+  h2.innerHTML = parsed.displaytitle || escapeHtml(baseTitle);
+  titleRow.appendChild(h2);
+
+  const favBtn = document.createElement('button');
+  favBtn.className = 'heart-btn large';
+  favBtn.title = 'Save to favorites';
+  favBtn.textContent = isFavorite(baseTitle) ? '💗' : '🤍';
+  favBtn.addEventListener('click', () => {
+    const nowFav = toggleFavorite(baseTitle);
+    favBtn.textContent = nowFav ? '💗' : '🤍';
+  });
+  titleRow.appendChild(favBtn);
+
+  const finalTitle = parsed.title || usedTitle;
+  const wikiLink = document.createElement('a');
+  wikiLink.href = `${WIKI}/wiki/${encodeURIComponent(finalTitle)}`;
+  wikiLink.target = '_blank';
+  wikiLink.rel = 'noopener';
+  wikiLink.textContent = 'View on wiki →';
+  titleRow.appendChild(wikiLink);
+
+  content.appendChild(titleRow);
+
+  const note = document.createElement('div');
+  note.id = 'variant-note';
+  if (gameMode === 'general') {
+    note.textContent = "Showing Don't Starve wiki data (covers all versions). 🌍";
+  } else {
+    note.textContent = hasDstVariant
+      ? "Showing Don't Starve Together data. 🌿"
+      : 'No DST-specific page found — showing the general wiki page (may include base-game details).';
+  }
+  content.appendChild(note);
+
+  if (craftingSection || sourceSection) {
+    const quickLinks = document.createElement('div');
+    quickLinks.className = 'quick-links';
+    if (craftingSection) {
+      const b = document.createElement('button');
+      b.className = 'quick-link-btn recipe';
+      b.textContent = '🔨 Jump to Recipe';
+      b.addEventListener('click', () => jumpToSection('quick-crafting-section'));
+      quickLinks.appendChild(b);
+    }
+    if (sourceSection) {
+      const b = document.createElement('button');
+      b.className = 'quick-link-btn source';
+      b.textContent = '📍 Where to Find It';
+      b.addEventListener('click', () => jumpToSection('quick-source-section'));
+      quickLinks.appendChild(b);
+    }
+    content.appendChild(quickLinks);
+  }
+
+  const wikiContentEl = document.createElement('div');
+  wikiContentEl.id = 'wiki-content';
+  wikiContentEl.appendChild(wrapper);
+
+  content.appendChild(wikiContentEl);
+}
+</script>
+</body>
+</html>

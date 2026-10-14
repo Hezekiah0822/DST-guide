@@ -4,6 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DST Guide</title>
+<meta name="description" content="A cozy Don't Starve Together companion — search, recipes, favorites and more.">
+<!-- "Add to Home Screen": opens full-screen with its own icon on phones -->
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#d6336c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="DST Guide">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -21,6 +31,8 @@
     --green-light: #dcf6e8;
     --green: #63c58a;
     --green-dark: #1f8f5f;
+    --pink-solid: #d6336c;
+    --green-solid: #187a51;
     --danger: #e0554f;
     --bg-gradient: linear-gradient(160deg, #fff8fa 0%, #f3fbf6 100%);
     --card-shadow: 0 4px 16px rgba(214, 51, 108, 0.1);
@@ -38,6 +50,8 @@
     --green-light: #1c3a2c;
     --green: #63c58a;
     --green-dark: #5be0a0;
+    --pink-solid: #c2185b;
+    --green-solid: #187a51;
     --danger: #ff7a72;
     --bg-gradient: linear-gradient(160deg, #1c1620 0%, #16201c 100%);
     --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
@@ -56,6 +70,8 @@
       --green-light: #1c3a2c;
       --green: #63c58a;
       --green-dark: #5be0a0;
+      --pink-solid: #c2185b;
+      --green-solid: #187a51;
       --danger: #ff7a72;
       --bg-gradient: linear-gradient(160deg, #1c1620 0%, #16201c 100%);
       --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
@@ -69,7 +85,9 @@
     font-family: "Quicksand", "Segoe UI", sans-serif;
     transition: background 0.2s, color 0.2s;
   }
-  #app { display: flex; flex-direction: column; height: 100vh; }
+  /* dvh: on phones 100vh is taller than the visible screen (it ignores the browser's
+     toolbars), which cut off the bottom of the page on iPhone Safari */
+  #app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
 
   /* ---------- Landing page ---------- */
   #landing-view {
@@ -113,6 +131,20 @@
     font-family: "Quicksand", sans-serif; color: var(--text); min-width: 0;
   }
   #landing-search-box::placeholder { color: var(--text-dim2); }
+  .landing-search-wrap { position: relative; }
+  .landing-suggest {
+    position: absolute; left: 10px; right: 10px; top: calc(100% + 6px); z-index: 30;
+    background: var(--panel); border: 1.5px solid var(--border); border-radius: 16px;
+    box-shadow: var(--card-shadow); padding: 6px; text-align: left;
+  }
+  .suggest-item {
+    display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 14px;
+    background: none; border: none; border-radius: 10px; cursor: pointer; text-align: left;
+    font-family: "Quicksand", sans-serif; font-weight: 600; font-size: 14.5px; color: var(--text);
+  }
+  .suggest-item:hover, .suggest-item.active { background: var(--panel-alt); }
+  .suggest-item b { color: var(--pink-dark); }
+  .suggest-icon { font-size: 13px; opacity: 0.5; }
   .landing-actions { display: flex; justify-content: center; gap: 12px; margin: 24px 0 30px; flex-wrap: wrap; }
   .landing-actions button {
     font-family: "Quicksand", sans-serif; font-weight: 700; font-size: 13.5px;
@@ -201,6 +233,11 @@
     padding: 8px 14px; border-radius: 999px; cursor: pointer;
   }
   #reset-colors-btn:hover { color: var(--text); border-color: var(--pink); }
+  .settings-tip {
+    font-size: 11.5px; line-height: 1.45; color: var(--text-dim2);
+    border-top: 1px dashed var(--border); padding-top: 10px;
+  }
+  .settings-tip b { color: var(--text); }
 
   .switch { display: inline-block; }
   .switch input { display: none; }
@@ -212,7 +249,7 @@
     position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%;
     background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.3); transition: left 0.2s;
   }
-  .switch input:checked + .switch-track { background: var(--pink-dark); }
+  .switch input:checked + .switch-track { background: var(--pink-solid); }
   .switch input:checked + .switch-track .switch-thumb { left: 21px; }
 
   #browse-menu-wrap { position: relative; flex: 0 0 auto; }
@@ -237,15 +274,17 @@
     padding: 9px 14px; border-radius: 999px; white-space: nowrap; cursor: pointer; transition: all 0.15s;
   }
   .tab-btn:hover { background: var(--pink); color: #fff; }
-  .tab-btn.active { background: var(--pink-dark); color: #fff; border-color: var(--pink-dark);
+  .tab-btn.active { background: var(--pink-solid); color: #fff; border-color: var(--pink-solid);
     box-shadow: 0 2px 6px rgba(214,51,108,0.35); }
 
   /* ---------- Scrollable body ---------- */
+  /* The padding only sits above the top of the content, so once you scroll it's gone and
+     the hidden toolbar leaves no gap. It must stay constant: shrinking it when the toolbar
+     hides shifted the whole page up/down 68px each time the toolbar slid in or out. */
   #scroll-area {
     flex: 1; overflow-y: auto;
-    padding-top: var(--toolbar-h, 64px); transition: padding-top 0.25s ease;
+    padding-top: var(--toolbar-h, 64px); scroll-padding-top: var(--toolbar-h, 64px);
   }
-  #app.toolbar-hidden #scroll-area { padding-top: 0; }
   #browse-view, #detail-view { max-width: 860px; margin: 0 auto; padding: 16px 18px 40px; }
 
   .picker { padding: 4px 2px 16px; }
@@ -259,7 +298,7 @@
   }
   .pill-icon { display: block; width: 26px; height: 26px; object-fit: contain; border-radius: 6px; background: #fff; padding: 2px; flex-shrink: 0; }
   .pill-btn:hover { background: var(--pink); color: #fff; transform: translateY(-1px); }
-  .pill-btn.active { background: var(--pink-dark); color: #fff; border-color: var(--pink-dark);
+  .pill-btn.active { background: var(--pink-solid); color: #fff; border-color: var(--pink-solid);
     box-shadow: 0 2px 6px rgba(214,51,108,0.35); }
 
   .az-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
@@ -269,7 +308,7 @@
     padding: 8px 0; border-radius: 9px; cursor: pointer; transition: all 0.15s;
   }
   .az-btn:hover { background: var(--green); color: #fff; }
-  .az-btn.active { background: var(--green-dark); color: #fff; border-color: var(--green-dark); }
+  .az-btn.active { background: var(--green-solid); color: #fff; border-color: var(--green-solid); }
 
   #results-label {
     font-family: "Baloo 2", cursive; font-weight: 700; color: var(--pink-dark);
@@ -330,6 +369,9 @@
     max-height: 1.3em; width: auto; margin-right: 4px;
   }
   #wiki-content table { border-collapse: collapse; margin: 10px 0; max-width: 100%; }
+  /* Wide tables scroll sideways inside their own box instead of widening the whole page */
+  #wiki-content .table-scroll { overflow-x: auto; max-width: 100%; margin: 10px 0; -webkit-overflow-scrolling: touch; }
+  #wiki-content .table-scroll > table { margin: 0; }
   #wiki-content table:not(.pi-navigation) td, #wiki-content table:not(.pi-navigation) th {
     border: 1px solid var(--border); padding: 6px 10px; font-size: 13px;
   }
@@ -373,7 +415,7 @@
     text-decoration: none !important; cursor: pointer; display: inline-block;
   }
   #wiki-content .tabber__tab:hover { background: var(--pink); color: #fff; }
-  #wiki-content .tabber__tab--active { background: var(--pink-dark); color: #fff; border-color: var(--pink-dark); }
+  #wiki-content .tabber__tab--active { background: var(--pink-solid); color: #fff; border-color: var(--pink-solid); }
   #wiki-content .tabber__section { margin-top: 10px; }
   #wiki-content .tabber__panel { border: 1.5px solid var(--border); border-radius: 12px; padding: 12px 16px; background: var(--panel-alt); }
 
@@ -390,7 +432,9 @@
     border-radius: 13px 13px 0 0; margin: -10px -10px 10px; padding: 12px 10px;
     border-bottom: none;
   }
-  aside.portable-infobox .pi-header {
+  /* #wiki-content prefix: these are h2/h3 elements, so without it the general article
+     heading rule wins and adds a 30px top margin to every row */
+  #wiki-content aside.portable-infobox .pi-header {
     font-family: "Baloo 2", cursive; font-weight: 700; color: var(--green-dark);
     margin: 12px 0 5px; font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.4px;
     border-bottom: 2px dotted var(--green-light); padding-bottom: 4px;
@@ -401,15 +445,32 @@
     display: flex; flex-direction: column; align-items: flex-start; gap: 5px;
     padding: 7px 0; border-bottom: 1px dashed var(--border);
   }
-  aside.portable-infobox .pi-data-label {
-    color: var(--text-dim2); font-weight: 700; font-size: 11px;
-    text-transform: uppercase; letter-spacing: 0.3px;
+  #wiki-content aside.portable-infobox .pi-data-label:not(th) {
+    display: flex; align-items: center; gap: 8px; margin: 0; padding: 0; border: none;
+    font-family: "Quicksand", sans-serif; color: var(--text-dim2); font-weight: 700; font-size: 12px;
+    text-transform: uppercase; letter-spacing: 0.3px; line-height: 1.2;
   }
-  aside.portable-infobox .pi-data-value {
+  /* The wiki sets some labels (and other bits) in its own "Belisa_plumilla" font at 20px,
+     inline; we don't load that font, so it fell back to a big serif — use ours instead. */
+  #wiki-content [style*="Belisa"] { font-family: inherit !important; font-size: inherit !important; }
+  #wiki-content aside.portable-infobox .pi-data-label:not(th) center { text-align: left; }
+  #wiki-content aside.portable-infobox .pi-data-label:not(th) a { color: inherit; font-weight: inherit; }
+  #wiki-content aside.portable-infobox .pi-data-label:not(th) img {
+    width: 28px; height: 28px; max-height: none; object-fit: contain; margin: 0;
+  }
+  /* :not(td) — the same class is on the cells of stat rows (Health/Hunger/Sanity), and
+     making a table cell a flex box breaks it out of its column, stacking the numbers */
+  aside.portable-infobox .pi-data-value:not(td) {
     display: flex; align-items: center; flex-wrap: wrap; gap: 5px;
     text-align: left; color: var(--text); font-size: 13.5px;
   }
   aside.portable-infobox .pi-data-value img { vertical-align: middle; }
+  #wiki-content aside.portable-infobox table.pi-horizontal-group { width: 100%; table-layout: fixed; border-collapse: collapse; }
+  #wiki-content aside.portable-infobox .pi-horizontal-group th,
+  #wiki-content aside.portable-infobox .pi-horizontal-group td {
+    text-align: center; vertical-align: middle; padding: 6px 4px;
+    border: 1px solid var(--border); color: var(--text); font-size: 13.5px;
+  }
   aside.portable-infobox figure { margin: 0 0 8px; text-align: center; }
   aside.portable-infobox figure img { max-height: 160px; width: auto; }
 
@@ -420,9 +481,50 @@
     font-family: "Baloo 2", cursive; font-weight: 700; font-size: 14.5px;
     padding: 10px 18px; border-radius: 999px; cursor: pointer; border: none; color: #fff;
   }
-  .quick-link-btn.recipe { background: linear-gradient(100deg, var(--green), var(--green-dark)); }
   .quick-link-btn.source { background: linear-gradient(100deg, var(--pink), var(--pink-dark)); }
   .quick-link-btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
+
+  /* Recipe card at the top of craftable items / dishes */
+  .recipe-card {
+    background: var(--panel); border: 2px solid var(--green-light); border-radius: 16px;
+    padding: 12px 16px 8px; margin: 0 0 20px; box-shadow: var(--card-shadow);
+  }
+  .recipe-card h3 {
+    font-family: "Baloo 2", cursive; font-size: 16px; color: var(--green-dark);
+    margin: 0 0 4px; padding: 0; border: none;
+  }
+  .recipe-row {
+    display: flex; align-items: center; gap: 12px; padding: 9px 0;
+    border-top: 1px dashed var(--border);
+  }
+  .recipe-card h3 + .recipe-row { border-top: none; }
+  .recipe-desc { font-style: italic; color: var(--text-dim2); font-size: 13.5px; }
+  .recipe-label {
+    flex: 0 0 96px; font-size: 11.5px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.3px; color: var(--text-dim2); line-height: 1.2;
+  }
+  .recipe-value { flex: 1; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; font-size: 14px; color: var(--text); }
+  .recipe-chip { display: inline-flex; align-items: center; gap: 4px; font-weight: 700; white-space: nowrap; }
+  .recipe-chip a { display: inline-flex; align-items: center; gap: 6px; color: var(--text); text-decoration: none; font-weight: 600; }
+  .recipe-chip a:hover .recipe-name { color: var(--pink-dark); text-decoration: underline; }
+  .recipe-chip img { width: 30px; height: 30px; object-fit: contain; }
+  @media (max-width: 480px) { .recipe-label { flex-basis: 78px; } }
+
+  .share-btn {
+    font-family: "Quicksand", sans-serif; font-weight: 700; font-size: 12px; line-height: 1;
+    background: var(--panel-alt); border: 1.5px solid var(--border); color: var(--text-dim2);
+    padding: 6px 12px; border-radius: 999px; cursor: pointer;
+  }
+  .share-btn:hover { color: var(--text); border-color: var(--pink); }
+
+  .list-actions { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding: 0 6px 8px; }
+  .list-hint { font-size: 12px; color: var(--text-dim2); }
+  .list-action-btn {
+    margin-left: auto; font-family: "Quicksand", sans-serif; font-weight: 700; font-size: 12px; line-height: 1;
+    background: var(--panel-alt); border: 1.5px solid var(--border); color: var(--text-dim2);
+    padding: 7px 13px; border-radius: 999px; cursor: pointer;
+  }
+  .list-action-btn:hover { color: var(--text); border-color: var(--pink); }
   @keyframes quickPulse {
     0%, 100% { box-shadow: 0 0 0 0 rgba(214,51,108,0); }
     30% { box-shadow: 0 0 0 8px rgba(214,51,108,0.35); }
@@ -454,9 +556,12 @@
         <button class="game-mode-btn" data-mode="dst">&#127918; Don't Starve Together</button>
         <button class="game-mode-btn" data-mode="general">&#127760; All Don't Starve</button>
       </div>
-      <div class="landing-search-row">
-        <span class="landing-search-icon">&#128269;</span>
-        <input id="landing-search-box" type="text" placeholder="Ask anything about Don't Starve Together…" autocomplete="off">
+      <div class="landing-search-wrap">
+        <div class="landing-search-row">
+          <span class="landing-search-icon">&#128269;</span>
+          <input id="landing-search-box" type="text" placeholder="Ask anything about Don't Starve Together…" autocomplete="off">
+        </div>
+        <div id="landing-suggest" class="landing-suggest" role="listbox" hidden></div>
       </div>
       <div class="landing-actions">
         <button id="landing-search-btn">Search the Wiki</button>
@@ -526,6 +631,10 @@
       <input type="color" id="color-green" class="color-swatch">
     </div>
     <button id="reset-colors-btn">&#8634; Reset to default</button>
+    <div class="settings-tip" id="install-tip">
+      &#128242; <b>Put it on your home screen:</b> on iPhone, tap Safari's Share button, then
+      <b>Add to Home Screen</b>. On Android, open the &#8942; menu and choose <b>Add to Home screen</b>.
+    </div>
   </div>
 
   <div id="scroll-area" hidden>
@@ -570,8 +679,13 @@ function applyGameMode(mode) {
   document.querySelectorAll('.game-mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
 }
 function setGameMode(mode) {
+  const changed = mode !== getGameMode();
   saveGameMode(mode);
   applyGameMode(mode);
+  // re-show the open article in the newly chosen version
+  if (changed && currentPageTitle && !detailView.hidden && !scrollArea.hidden) {
+    loadPage(currentPageTitle, { fromHistory: true });
+  }
 }
 document.querySelectorAll('.game-mode-btn').forEach(btn => {
   btn.addEventListener('click', () => setGameMode(btn.dataset.mode));
@@ -605,7 +719,10 @@ const backBtn = document.getElementById('back-btn');
 const scrollArea = document.getElementById('scroll-area');
 
 let searchTimer = null;
-let currentReqId = 0;
+// separate counters so a page load and a list/search fetch can run at once without
+// one discarding the other's results
+let listReqId = 0;
+let pageReqId = 0;
 
 function apiUrl(params) {
   const usp = new URLSearchParams(Object.assign({ format: 'json', formatversion: '2', origin: '*' }, params));
@@ -624,8 +741,22 @@ function escapeHtml(s) {
 
 function setResultsLabel(text) { resultsLabel.textContent = text; }
 
+/* ---------- History: the phone's back gesture / browser back step through the app instead
+   of leaving the site, and every article gets its own shareable link (#/wiki/Title) ---------- */
+const HOME_URL = location.pathname + location.search;
+function currentView() { return (history.state && history.state.view) || 'landing'; }
+function navPush(state, url) { try { history.pushState(state, '', url); } catch (e) { /* sandboxed viewer */ } }
+function navReplace(state, url) { try { history.replaceState(state, '', url); } catch (e) { /* sandboxed viewer */ } }
+function enterListState() {
+  if (currentView() === 'list') navReplace({ view: 'list' }, '#/results');
+  else navPush({ view: 'list' }, '#/results');
+}
+function pageUrl(title) { return '#/wiki/' + encodeURIComponent(title.replace(/ /g, '_')); }
+
 /* ---------- View switching: browse (list) vs detail (article) ---------- */
+let listScrollTop = 0;
 function showDetailView() {
+  if (!browseView.hidden) listScrollTop = scrollArea.scrollTop;
   browseView.hidden = true;
   detailView.hidden = false;
   scrollArea.scrollTop = 0;
@@ -634,8 +765,20 @@ function showDetailView() {
 function showBrowseView() {
   detailView.hidden = true;
   browseView.hidden = false;
+  document.title = 'DST Guide';
 }
-backBtn.addEventListener('click', showBrowseView);
+// Going back to a list puts you where you were in it, not at the top.
+function returnToList() {
+  const wasHidden = browseView.hidden;
+  showBrowseView();
+  if (wasHidden) { scrollArea.scrollTop = listScrollTop; resetToolbarScrollState(); }
+}
+backBtn.addEventListener('click', () => {
+  const st = history.state;
+  if (st && st.view === 'page' && st.prev === 'list') { history.back(); return; }
+  returnToList();
+  enterListState();
+});
 
 /* ---------- Landing page vs. results mode ---------- */
 const appEl = document.getElementById('app');
@@ -646,6 +789,8 @@ function showLanding() {
   scrollArea.hidden = true;
   landingView.hidden = false;
   document.getElementById('landing-search-box').value = '';
+  hideSuggest();
+  document.title = 'DST Guide';
 }
 function showResultsMode() {
   landingView.hidden = true;
@@ -654,12 +799,15 @@ function showResultsMode() {
   updateToolbarHeightVar();
   resetToolbarScrollState();
 }
-document.getElementById('home-logo-btn').addEventListener('click', showLanding);
+document.getElementById('home-logo-btn').addEventListener('click', () => {
+  showLanding();
+  navPush({ view: 'landing' }, HOME_URL);
+});
 
 /* ---------- Auto-hide toolbar: hides on scroll-down, reveals on scroll-up or hover-near-top ----------
    The toolbar is `position: fixed` (out of document flow) so it can hide without leaving behind the
-   blank space it used to occupy; #scroll-area's padding-top (driven by --toolbar-h) reclaims that
-   space in sync with the toolbar's own slide animation. */
+   blank space it used to occupy; #scroll-area's padding-top (--toolbar-h) keeps the top of the
+   content clear of it. */
 let lastScrollTop = 0;
 let scrolledPastThreshold = false;
 function updateToolbarHeightVar() {
@@ -730,6 +878,7 @@ function applyAccentColor(prefix, hex) {
   const root = document.documentElement.style;
   root.setProperty(`--${prefix}`, hex);
   root.setProperty(`--${prefix}-dark`, mixHex(hex, '#000000', 0.35));
+  root.setProperty(`--${prefix}-solid`, mixHex(hex, '#000000', 0.35));
   root.setProperty(`--${prefix}-light`, mixHex(hex, '#ffffff', 0.85));
 }
 
@@ -784,6 +933,10 @@ function toggleSettingsPanel() {
   if (!settingsPanel.hidden) initColorInputs();
 }
 document.getElementById('settings-btn').addEventListener('click', toggleSettingsPanel);
+// already opened from the home screen — no need for the how-to
+if ((window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone) {
+  document.getElementById('install-tip').hidden = true;
+}
 document.getElementById('landing-settings-btn').addEventListener('click', toggleSettingsPanel);
 
 const darkModeToggle = document.getElementById('dark-mode-toggle');
@@ -810,7 +963,8 @@ document.getElementById('color-green').addEventListener('input', (e) => {
 });
 document.getElementById('reset-colors-btn').addEventListener('click', () => {
   const root = document.documentElement.style;
-  ['--bg', '--bg-gradient', '--pink', '--pink-dark', '--pink-light', '--green', '--green-dark', '--green-light']
+  ['--bg', '--bg-gradient', '--pink', '--pink-dark', '--pink-solid', '--pink-light',
+   '--green', '--green-dark', '--green-solid', '--green-light']
     .forEach(v => root.removeProperty(v));
   try { localStorage.removeItem(COLORS_KEY); } catch (e) { /* ignore */ }
   initColorInputs();
@@ -836,6 +990,12 @@ browseMenuBtn.addEventListener('click', (ev) => {
 document.addEventListener('click', (ev) => {
   if (!browseMenu.hidden && !browseMenu.contains(ev.target) && ev.target !== browseMenuBtn) closeBrowseMenu();
 });
+function closeOverlays() {
+  document.querySelectorAll('.lightbox-overlay').forEach(o => o.remove());
+  settingsPanel.hidden = true;
+  closeBrowseMenu();
+}
+document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') closeOverlays(); });
 
 CATEGORIES.forEach(c => {
   const btn = document.createElement('button');
@@ -868,6 +1028,7 @@ tabBtns.forEach(btn => {
     const tab = btn.dataset.tab;
     closeBrowseMenu();
     showBrowseView();
+    enterListState();
     searchBox.value = '';
     setActiveTab(tab);
     pickerCategory.hidden = tab !== 'category';
@@ -893,6 +1054,7 @@ tabBtns.forEach(btn => {
 searchBox.addEventListener('input', () => {
   setActiveTab(null);
   showBrowseView();
+  enterListState();
   pickerCategory.hidden = true;
   pickerAz.hidden = true;
   const q = searchBox.value.trim();
@@ -910,7 +1072,9 @@ const landingSearchBox = document.getElementById('landing-search-box');
 function submitLandingSearch() {
   const q = landingSearchBox.value.trim();
   if (!q) return;
+  hideSuggest();
   showResultsMode();
+  enterListState();
   setActiveTab(null);
   showBrowseView();
   pickerCategory.hidden = true;
@@ -918,12 +1082,103 @@ function submitLandingSearch() {
   searchBox.value = q;
   runSearch(q);
 }
+/* Suggestions under the home-page search box as you type (Google-style) */
+const landingSuggest = document.getElementById('landing-suggest');
+let suggestTimer = null;
+let suggestReqId = 0;
+let suggestTitles = [];
+let suggestActive = -1;
+function hideSuggest() {
+  landingSuggest.hidden = true;
+  suggestTitles = [];
+  suggestActive = -1;
+}
+async function fetchSuggestions(q) {
+  const reqId = ++suggestReqId;
+  const cleaned = cleanSearchQuery(q);
+  try {
+    const data = await apiGet({ action: 'query', list: 'prefixsearch', pssearch: cleaned, psnamespace: '0', pslimit: '12' });
+    if (reqId !== suggestReqId || landingSearchBox.value.trim() !== q || landingView.hidden) return;
+    const titles = data.query.prefixsearch.map(p => p.title)
+      .filter(t => !t.includes('/'))
+      .sort(byClosestMatch(cleaned))
+      .slice(0, 6);
+    renderSuggestions(titles, cleaned);
+  } catch (e) {
+    hideSuggest();
+  }
+}
+function renderSuggestions(titles, typed) {
+  if (!titles.length) { hideSuggest(); return; }
+  suggestTitles = titles;
+  suggestActive = -1;
+  landingSuggest.innerHTML = '';
+  titles.forEach(t => {
+    const item = document.createElement('button');
+    item.type = 'button';
+    item.className = 'suggest-item';
+    item.setAttribute('role', 'option');
+    const icon = document.createElement('span');
+    icon.className = 'suggest-icon';
+    icon.textContent = '🔍';
+    const label = document.createElement('span');
+    if (t.toLowerCase().startsWith(typed.toLowerCase())) {
+      const typedPart = document.createElement('b');
+      typedPart.textContent = t.slice(0, typed.length);
+      label.append(typedPart, t.slice(typed.length));
+    } else {
+      label.textContent = t;
+    }
+    item.append(icon, label);
+    item.addEventListener('mousedown', (ev) => ev.preventDefault()); // keep focus so the click lands
+    item.addEventListener('click', () => openSuggestion(t));
+    landingSuggest.appendChild(item);
+  });
+  landingSuggest.hidden = false;
+}
+function highlightSuggestion(i) {
+  suggestActive = i;
+  landingSuggest.querySelectorAll('.suggest-item').forEach((el, j) => el.classList.toggle('active', j === i));
+}
+function openSuggestion(title) {
+  const q = landingSearchBox.value.trim();
+  hideSuggest();
+  showResultsMode();
+  enterListState();
+  setActiveTab(null);
+  showBrowseView();
+  pickerCategory.hidden = true;
+  pickerAz.hidden = true;
+  searchBox.value = q;
+  runSearch(q); // so "Back to results" lists the other matches
+  loadPage(title);
+}
+landingSearchBox.addEventListener('input', () => {
+  const q = landingSearchBox.value.trim();
+  clearTimeout(suggestTimer);
+  if (q.length < 2) { hideSuggest(); return; }
+  suggestTimer = setTimeout(() => fetchSuggestions(q), 200);
+});
+landingSearchBox.addEventListener('blur', () => setTimeout(hideSuggest, 150));
 landingSearchBox.addEventListener('keydown', (ev) => {
-  if (ev.key === 'Enter') submitLandingSearch();
+  const open = !landingSuggest.hidden;
+  if (ev.key === 'ArrowDown' && open) {
+    ev.preventDefault();
+    highlightSuggestion(Math.min(suggestActive + 1, suggestTitles.length - 1));
+  } else if (ev.key === 'ArrowUp' && open) {
+    ev.preventDefault();
+    highlightSuggestion(Math.max(suggestActive - 1, -1));
+  } else if (ev.key === 'Escape') {
+    hideSuggest();
+  } else if (ev.key === 'Enter') {
+    if (open && suggestActive >= 0) openSuggestion(suggestTitles[suggestActive]);
+    else submitLandingSearch();
+  }
 });
 document.getElementById('landing-search-btn').addEventListener('click', submitLandingSearch);
 document.getElementById('landing-surprise-btn').addEventListener('click', () => {
   showResultsMode();
+  enterListState();
   runRandom();
 });
 document.querySelectorAll('.landing-link').forEach(link => {
@@ -949,13 +1204,21 @@ const SEARCH_FILLER_WORDS = new Set([
   'have', 'having', 'use', 'using', 'used', 'obtain', 'obtaining', 'acquire', 'survive', 'surviving',
   'fight', 'fighting'
 ]);
+// Titles that start with exactly what was typed come first ("log su" → Log Suit before Log),
+// then shorter (closer) titles.
+function byClosestMatch(typed) {
+  const t = typed.toLowerCase();
+  return (a, b) => (a.toLowerCase().startsWith(t) ? 0 : 1) - (b.toLowerCase().startsWith(t) ? 0 : 1)
+    || a.length - b.length;
+}
+
 function cleanSearchQuery(q) {
   const words = q.trim().split(/\s+/).filter(w => w && !SEARCH_FILLER_WORDS.has(w.toLowerCase()));
   return words.length ? words.join(' ') : q.trim();
 }
 
 async function runSearch(query) {
-  const reqId = ++currentReqId;
+  const reqId = ++listReqId;
   setResultsLabel(`🔍 Results for "${query}"`);
   resultsList.innerHTML = '<div class="status-msg">Searching…</div>';
   try {
@@ -967,12 +1230,12 @@ async function runSearch(query) {
       apiGet({ action: 'query', list: 'prefixsearch', pssearch: cleaned, psnamespace: '0', pslimit: '12' }),
       apiGet({ action: 'query', list: 'search', srsearch: cleaned, srnamespace: '0', srlimit: '20' })
     ]);
-    if (reqId !== currentReqId) return;
+    if (reqId !== listReqId) return;
     const seen = new Set();
     const items = [];
     prefixData.query.prefixsearch
       .filter(p => !p.title.includes('/'))
-      .sort((a, b) => a.title.length - b.title.length) // closest/shortest match first
+      .sort((a, b) => byClosestMatch(cleaned)(a.title, b.title))
       .forEach(p => {
       if (seen.has(p.title)) return;
       seen.add(p.title);
@@ -985,47 +1248,60 @@ async function runSearch(query) {
     });
     renderResultList(items);
   } catch (e) {
-    if (reqId !== currentReqId) return;
+    if (reqId !== listReqId) return;
     resultsList.innerHTML = `<div class="status-msg error">Search failed: ${escapeHtml(e.message)}</div>`;
   }
 }
 
+// Fetch a whole list, following the API's "continue" token past its per-request cap
+// (categories run to 250+ pages and some letters to 400+).
+async function fetchFullList(params, listKey, max = 2000) {
+  const all = [];
+  let cont = {};
+  do {
+    const data = await apiGet(Object.assign({}, params, cont));
+    all.push(...data.query[listKey]);
+    cont = data.continue || null;
+  } while (cont && all.length < max);
+  return all;
+}
+
 async function runCategoryBrowse(category, label) {
-  const reqId = ++currentReqId;
+  const reqId = ++listReqId;
   setResultsLabel(label);
   resultsList.innerHTML = `<div class="status-msg">Loading ${escapeHtml(label)}…</div>`;
   try {
-    const data = await apiGet({ action: 'query', list: 'categorymembers', cmtitle: category, cmnamespace: '0', cmlimit: '75' });
-    if (reqId !== currentReqId) return;
-    const members = data.query.categorymembers
+    const raw = await fetchFullList({ action: 'query', list: 'categorymembers', cmtitle: category, cmnamespace: '0', cmlimit: '500' }, 'categorymembers');
+    if (reqId !== listReqId) return;
+    const members = raw
       .filter(m => !m.title.endsWith('/DST') && m.title !== category.replace('Category:', ''))
       .sort((a, b) => a.title.localeCompare(b.title));
+    setResultsLabel(`${label} (${members.length})`);
     renderResultList(members.map(m => ({ title: m.title, snippet: '' })));
   } catch (e) {
-    if (reqId !== currentReqId) return;
+    if (reqId !== listReqId) return;
     resultsList.innerHTML = `<div class="status-msg error">Couldn't load category: ${escapeHtml(e.message)}</div>`;
   }
 }
 
 async function runLetterBrowse(letter) {
-  const reqId = ++currentReqId;
+  const reqId = ++listReqId;
   resultsList.innerHTML = '<div class="status-msg">Loading…</div>';
   try {
-    const data = await apiGet({
+    const raw = await fetchFullList({
       action: 'query', list: 'allpages', apprefix: letter, apnamespace: '0',
-      apfilterredir: 'nonredirects', aplimit: '60'
-    });
-    if (reqId !== currentReqId) return;
-    const raw = data.query.allpages;
-    setResultsLabel(`🔤 Starting with "${letter}"${raw.length >= 60 ? ' (first 60)' : ''}`);
+      apfilterredir: 'nonredirects', aplimit: '500'
+    }, 'allpages');
+    if (reqId !== listReqId) return;
     const items = raw
       .map(p => p.title)
       .filter(t => !t.endsWith('/DST'))
       .sort((a, b) => a.localeCompare(b))
       .map(t => ({ title: t, snippet: '' }));
+    setResultsLabel(`🔤 Starting with "${letter}" (${items.length})`);
     renderResultList(items);
   } catch (e) {
-    if (reqId !== currentReqId) return;
+    if (reqId !== listReqId) return;
     resultsList.innerHTML = `<div class="status-msg error">Couldn't load: ${escapeHtml(e.message)}</div>`;
   }
 }
@@ -1037,7 +1313,28 @@ function showFavorites() {
     resultsList.innerHTML = '<div class="empty-msg">No favorites yet — tap the heart on anything you love! 💗</div>';
     return;
   }
-  renderResultList(favs.map(t => ({ title: t, snippet: '' })));
+  renderResultList(favs.map(t => ({ title: t, snippet: '' })), { removeOnUnfavorite: true });
+  resultsList.prepend(listActions('Tap a 💗 to remove it from your favorites.'));
+}
+
+// A small hint/button row above a list.
+function listActions(hint, buttonText, onClick) {
+  const bar = document.createElement('div');
+  bar.className = 'list-actions';
+  if (hint) {
+    const h = document.createElement('span');
+    h.className = 'list-hint';
+    h.textContent = hint;
+    bar.appendChild(h);
+  }
+  if (buttonText) {
+    const b = document.createElement('button');
+    b.className = 'list-action-btn';
+    b.textContent = buttonText;
+    b.addEventListener('click', onClick);
+    bar.appendChild(b);
+  }
+  return bar;
 }
 
 function showRecent() {
@@ -1048,6 +1345,10 @@ function showRecent() {
     return;
   }
   renderResultList(recent.map(t => ({ title: t, snippet: '' })));
+  resultsList.prepend(listActions('', '🧹 Clear recently viewed', () => {
+    writeList(RECENT_KEY, []);
+    showRecent();
+  }));
 }
 
 async function runRandom() {
@@ -1064,7 +1365,8 @@ async function runRandom() {
 }
 
 /* ---------- Result list rendering ---------- */
-function renderResultList(rawItems) {
+// opts.removeOnUnfavorite: in the Favorites list, un-hearting an item takes it off the list.
+function renderResultList(rawItems, opts = {}) {
   const items = rawItems.map(i => ({ title: i.title.replace(/\/DST$/, ''), snippet: i.snippet }));
   if (!items.length) {
     resultsList.innerHTML = '<div class="empty-msg">No results found. Try another search! 🌷</div>';
@@ -1092,6 +1394,10 @@ function renderResultList(rawItems) {
       ev.stopPropagation();
       const nowFav = toggleFavorite(item.title);
       heartBtn.textContent = nowFav ? '💗' : '🤍';
+      if (!nowFav && opts.removeOnUnfavorite) {
+        el.remove();
+        if (!resultsList.querySelector('.result-item')) showFavorites();
+      }
     });
     el.appendChild(heartBtn);
 
@@ -1108,71 +1414,76 @@ async function parsePage(title) {
   return data.parse;
 }
 
-async function loadPage(title) {
-  const reqId = ++currentReqId;
-  showDetailView();
-  content.innerHTML = `<div class="status-msg">Loading ${escapeHtml(title)}…</div>`;
+const pageCache = new Map(); // "mode|title" -> fetched page, so going Back is instant
+let currentPageTitle = null;
 
+async function loadPage(title, { fromHistory = false } = {}) {
+  const reqId = ++pageReqId;
   const baseTitle = title.replace(/\/DST$/, '');
   const dstTitle = `${baseTitle}/DST`;
   const gameMode = getGameMode();
 
-  let parsed = null;
-  let usedTitle = baseTitle;
-  let hasDstVariant = false;
+  if (!fromHistory) navPush({ view: 'page', title: baseTitle, prev: currentView() }, pageUrl(baseTitle));
+  currentPageTitle = baseTitle;
+  showDetailView();
+  content.innerHTML = `<div class="status-msg">Loading ${escapeHtml(baseTitle)}…</div>`;
 
-  try {
-    if (gameMode === 'dst') {
-      const dstParsed = await parsePage(dstTitle);
-      if (dstParsed) {
-        parsed = dstParsed;
-        usedTitle = dstTitle;
-        hasDstVariant = true;
+  const cacheKey = `${gameMode}|${baseTitle}`;
+  let entry = pageCache.get(cacheKey);
+  if (!entry) {
+    let parsed = null;
+    let usedTitle = baseTitle;
+    let hasDstVariant = false;
+    try {
+      if (gameMode === 'dst') {
+        const dstParsed = await parsePage(dstTitle);
+        if (dstParsed) {
+          parsed = dstParsed;
+          usedTitle = dstTitle;
+          hasDstVariant = true;
+        } else {
+          parsed = await parsePage(baseTitle);
+        }
       } else {
         parsed = await parsePage(baseTitle);
       }
-    } else {
-      parsed = await parsePage(baseTitle);
+    } catch (e) {
+      if (reqId !== pageReqId) return;
+      content.innerHTML = `<div class="status-msg error">Couldn't load page: ${escapeHtml(e.message)}</div>`;
+      return;
     }
-  } catch (e) {
-    if (reqId !== currentReqId) return;
-    content.innerHTML = `<div class="status-msg error">Couldn't load page: ${escapeHtml(e.message)}</div>`;
-    return;
+    if (reqId !== pageReqId) return;
+    if (!parsed) {
+      content.innerHTML = `<div class="status-msg error">No wiki page found for "${escapeHtml(baseTitle)}".
+        <br><a href="${WIKI}/index.php?search=${encodeURIComponent(baseTitle)}" target="_blank" rel="noopener">Search the wiki directly &#8594;</a></div>`;
+      return;
+    }
+    entry = { parsed, usedTitle, hasDstVariant };
+    pageCache.set(cacheKey, entry);
   }
-
-  if (reqId !== currentReqId) return;
-
-  if (!parsed) {
-    content.innerHTML = `<div class="status-msg error">No wiki page found for "${escapeHtml(title)}".
-      <br><a href="${WIKI}/index.php?search=${encodeURIComponent(title)}" target="_blank" rel="noopener">Search the wiki directly &#8594;</a></div>`;
-    return;
-  }
+  if (reqId !== pageReqId) return;
 
   pushRecent(baseTitle);
-  renderPage(parsed, baseTitle, hasDstVariant, usedTitle, gameMode);
+  renderPage(entry.parsed, baseTitle, entry.hasDstVariant, entry.usedTitle, gameMode);
 }
 
-/* Pull the wiki's "reaction quotes" widget out of the article and hand back
-   clean {portrait, text, speaker} data — its own markup relies on the wiki's
-   CSS (position:relative on the container) that we don't load, so left in
-   place it renders as a pile of icons stuck to the top-left of the page. */
-function extractQuotes(wrapper) {
-  const quotes = [];
-  wrapper.querySelectorAll('.DSWHoverTabContainer').forEach(container => {
-    container.querySelectorAll(':scope > .DSWHoverTab').forEach(tab => {
-      const portraitImg = tab.querySelector('.DSWHoverTabSelector img');
-      const quoteSpan = tab.querySelector('.DSWHoverTabContent span');
-      const speakerLink = tab.querySelector('.DSWHoverTabContent a');
-      if (!quoteSpan || !quoteSpan.textContent.trim()) return;
-      quotes.push({
-        portrait: portraitImg ? portraitImg.getAttribute('src') : null,
-        text: quoteSpan.textContent.trim(),
-        speaker: speakerLink ? speakerLink.textContent.trim() : ''
-      });
-    });
-    container.remove();
+/* Remove the wiki's "reaction quotes" widget: its markup relies on the wiki's own CSS
+   (position:relative on the container) that we don't load, so left in place it renders
+   as a pile of character icons stuck to the top-left of the page. */
+function removeQuotes(wrapper) {
+  wrapper.querySelectorAll('.DSWHoverTabContainer').forEach(c => c.remove());
+}
+
+/* Strip the wiki's end-of-article navigation boxes (walls of every related item's icon).
+   They usually sit inside a tab row whose panels hold nothing else, so once they're gone
+   remove any tab row left empty — inner rows first, so their emptied parents follow. */
+function removeNavboxes(wrapper) {
+  wrapper.querySelectorAll('.ranger-navbox').forEach(nb => nb.remove());
+  [...wrapper.querySelectorAll('.tabber')].reverse().forEach(tabber => {
+    const panels = [...tabber.querySelectorAll(':scope > section.tabber__section > .tabber__panel')];
+    const allEmpty = panels.every(p => !p.textContent.trim() && !p.querySelector('img'));
+    if (panels.length && allEmpty) tabber.remove();
   });
-  return quotes;
 }
 
 /* Strip the wiki's game-version / subpage nav (the "wood sign" buttons, e.g.
@@ -1212,12 +1523,163 @@ function openLightbox(src, alt) {
   document.body.appendChild(overlay);
 }
 
+// Make the wiki's relative links/images work here: images load from the wiki, links to
+// other wiki pages open in-app, and any other wiki link opens the wiki in a new tab.
+function wireLinksAndImages(root) {
+  root.querySelectorAll('img').forEach(img => {
+    const src = img.getAttribute('src');
+    if (src && src.startsWith('/')) img.src = WIKI + src;
+    img.removeAttribute('srcset'); // relative srcset URLs resolve against file:// and break
+    const w = parseInt(img.getAttribute('width') || '0', 10);
+    if (w >= 80) {
+      img.setAttribute('data-zoomable', '1');
+      img.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation(); // don't also trigger a wrapping link (e.g. the File: page link)
+        openLightbox(img.src, img.alt);
+      });
+    }
+  });
+  root.querySelectorAll('a[href^="/wiki/"]').forEach(a => {
+    const raw = a.getAttribute('href').replace('/wiki/', '').split('#')[0].split('?')[0];
+    const target = decodeURIComponent(raw);
+    if (!target) return;
+    a.href = 'javascript:void(0)';
+    a.addEventListener('click', (ev) => { ev.preventDefault(); loadPage(target); });
+  });
+  root.querySelectorAll('a[href^="/"]').forEach(a => {
+    if (a.getAttribute('href').startsWith('/wiki/')) return;
+    a.href = WIKI + a.getAttribute('href');
+    a.target = '_blank';
+    a.rel = 'noopener';
+  });
+}
+
+/* Recipe card shown at the top of craftable items and dishes, built from the infobox's
+   Crafting / Cooking Info rows. Row meaning comes from each row's data-source. */
+const RECIPE_ROWS = {
+  ingredient1: 'Ingredients', foodRecipe: 'Ingredients', tier: 'Made at', filter: 'Crafting tab',
+  cooktime: 'Cook time', priority: 'Priority', skill: 'Skill needed'
+};
+function iconName(el, rowSource) {
+  const link = el.matches('a') ? el : el.querySelector('a');
+  const img = el.matches('img') ? el : el.querySelector('img');
+  let name = (link && link.title) || (img && img.alt) || '';
+  name = name.replace(/\.(png|jpe?g|gif|webp)$/i, '').replace(/ Portrait$/, '').split('/')[0].trim();
+  if (rowSource === 'filter') name = name.replace(/ Filter$/, '');
+  return name;
+}
+function buildRecipeCard(section) {
+  const isCooking = /cooking/i.test(section.querySelector('.pi-header')?.textContent || '');
+  const card = document.createElement('section');
+  card.className = 'recipe-card';
+  const heading = document.createElement('h3');
+  heading.textContent = isCooking ? '🍲 Crock Pot recipe' : '🔨 How to craft';
+  card.appendChild(heading);
+
+  section.querySelectorAll('.pi-data').forEach(row => {
+    const valueEl = row.querySelector('.pi-data-value');
+    if (!valueEl || (!valueEl.textContent.trim() && !valueEl.querySelector('img'))) return;
+    const source = row.dataset.source || '';
+    const r = document.createElement('div');
+    r.className = 'recipe-row';
+
+    if (source === 'craft_desctiption') { // (sic) the wiki's own spelling
+      r.classList.add('recipe-desc');
+      r.textContent = valueEl.textContent.trim();
+      card.appendChild(r);
+      return;
+    }
+
+    const label = document.createElement('div');
+    label.className = 'recipe-label';
+    const labelEl = row.querySelector('.pi-data-label');
+    label.textContent = RECIPE_ROWS[source] || (labelEl && (labelEl.textContent.trim() || iconName(labelEl))) || '';
+
+    // Group each icon with the text that follows it ("×8") into one chip, and write the
+    // item's name next to its icon so it's readable without hovering.
+    const value = document.createElement('div');
+    value.className = 'recipe-value';
+    let chip = null;
+    [...valueEl.cloneNode(true).childNodes].forEach(n => {
+      const hasIcon = n.nodeType === 1 && (n.matches('img') || n.querySelector('img'));
+      if (!hasIcon && !chip && n.nodeType === 3 && !n.textContent.trim()) return;
+      if (hasIcon || !chip) {
+        chip = document.createElement('span');
+        chip.className = 'recipe-chip';
+        value.appendChild(chip);
+      }
+      chip.appendChild(n);
+      if (!hasIcon) return;
+      const name = iconName(n, source);
+      if (!name) return;
+      const s = document.createElement('span');
+      s.className = 'recipe-name';
+      s.textContent = name;
+      const link = n.matches('a') ? n : n.querySelector('a');
+      (link || chip).appendChild(s); // inside the link so tapping the name opens that item too
+    });
+
+    r.appendChild(label);
+    r.appendChild(value);
+    card.appendChild(r);
+  });
+  return card.querySelector('.recipe-row') ? card : null;
+}
+
+// On a phone, open the share sheet (Messages, etc.); elsewhere copy the link.
+function buildShareButton(title) {
+  const btn = document.createElement('button');
+  btn.className = 'share-btn';
+  btn.textContent = '🔗 Share';
+  btn.addEventListener('click', async () => {
+    const url = location.href;
+    const touch = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+    if (touch && navigator.share) {
+      try { await navigator.share({ title: `${title} · DST Guide`, url }); } catch (e) { /* closed the sheet */ }
+      return;
+    }
+    let copied = false;
+    try { await navigator.clipboard.writeText(url); copied = true; } catch (e) {
+      const ta = document.createElement('textarea');
+      ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      try { copied = document.execCommand('copy'); } catch (e2) { /* unsupported */ }
+      ta.remove();
+    }
+    btn.textContent = copied ? '✓ Link copied' : 'Copy failed';
+    setTimeout(() => { btn.textContent = '🔗 Share'; }, 1800);
+  });
+  return btn;
+}
+
 function renderPage(parsed, baseTitle, hasDstVariant, usedTitle, gameMode) {
   const wrapper = document.createElement('div');
   wrapper.innerHTML = parsed.text;
 
-  extractQuotes(wrapper);
+  removeQuotes(wrapper);
   removePageNav(wrapper);
+  removeNavboxes(wrapper);
+
+  wrapper.querySelectorAll('table').forEach(t => {
+    if (t.parentElement.closest('table') || t.closest('aside.portable-infobox')) return;
+    if (/float\s*:\s*(left|right)/i.test(t.getAttribute('style') || '')) return;
+    const scroller = document.createElement('div');
+    scroller.className = 'table-scroll';
+    t.before(scroller);
+    scroller.appendChild(t);
+  });
+
+  // In-page links (the Quick Jump list) scroll the article directly; left to the browser
+  // they'd also rewrite the address bar and clash with the #/wiki/ page links.
+  wrapper.querySelectorAll('a[href^="#"]:not(.tabber__tab)').forEach(a => {
+    a.addEventListener('click', (ev) => {
+      const target = document.getElementById(decodeURIComponent(a.getAttribute('href').slice(1)));
+      if (!target) return;
+      ev.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
 
   const tocHeading = wrapper.querySelector('#mw-toc-heading');
   if (tocHeading) tocHeading.textContent = '📑 Quick Jump';
@@ -1240,34 +1702,30 @@ function renderPage(parsed, baseTitle, hasDstVariant, usedTitle, gameMode) {
     if (sourceSection) sourceSection.id = 'quick-source-section';
   }
 
-  // Rewrite relative links/images to absolute, and make internal wiki links load in-app
-  wrapper.querySelectorAll('img').forEach(img => {
-    const src = img.getAttribute('src');
-    if (src && src.startsWith('/')) img.src = WIKI + src;
-    img.removeAttribute('srcset'); // relative srcset URLs resolve against file:// and break
-    const w = parseInt(img.getAttribute('width') || '0', 10);
-    if (w >= 80) {
-      img.setAttribute('data-zoomable', '1');
-      img.addEventListener('click', (ev) => {
-        ev.preventDefault();
-        ev.stopPropagation(); // don't also trigger a wrapping link (e.g. the File: page link)
-        openLightbox(img.src, img.alt);
-      });
-    }
+  // Many infobox labels are a lone icon ("Perish time", "Stack Size"...) with the name only in
+  // a hover tooltip, which phones never show — write the name next to the icon.
+  const SHORT_LABELS = {
+    'What happens when the mob is haunted': 'Haunt effect',
+    'The number of hits it takes to freeze this mob with an Ice Staff': 'Hits to freeze',
+    'The number of hits it takes to put this mob to sleep with a Sleep Dart': 'Hits to sleep'
+  };
+  wrapper.querySelectorAll('aside.portable-infobox h3.pi-data-label').forEach(label => {
+    if (label.textContent.trim()) return;
+    const img = label.querySelector('img');
+    if (!img) return;
+    const name = ((img.closest('a') && img.closest('a').title) || img.alt || '')
+      .replace(/\.(png|jpe?g|gif|webp)$/i, '').trim();
+    if (!name) return;
+    const span = document.createElement('span');
+    span.textContent = SHORT_LABELS[name] || name;
+    label.appendChild(span);
   });
-  wrapper.querySelectorAll('a[href^="/wiki/"]').forEach(a => {
-    const raw = a.getAttribute('href').replace('/wiki/', '').split('#')[0].split('?')[0];
-    const target = decodeURIComponent(raw);
-    if (!target) return;
-    a.href = 'javascript:void(0)';
-    a.addEventListener('click', (ev) => { ev.preventDefault(); loadPage(target); });
-  });
-  wrapper.querySelectorAll('a[href^="/"]').forEach(a => {
-    if (a.getAttribute('href').startsWith('/wiki/')) return;
-    a.href = WIKI + a.getAttribute('href');
-    a.target = '_blank';
-    a.rel = 'noopener';
-  });
+
+  // Built from the infobox before its links are wired up — cloned nodes don't keep listeners.
+  const recipeCard = craftingSection ? buildRecipeCard(craftingSection) : null;
+
+  wireLinksAndImages(wrapper);
+  if (recipeCard) wireLinksAndImages(recipeCard);
 
   // Reimplement the wiki's "Tabber" widget ourselves (its own JS isn't loaded, so
   // without this every tab's content would just stack on top of each other)
@@ -1294,7 +1752,12 @@ function renderPage(parsed, baseTitle, hasDstVariant, usedTitle, gameMode) {
   titleRow.id = 'detail-title';
 
   const h2 = document.createElement('h2');
-  h2.innerHTML = parsed.displaytitle || escapeHtml(baseTitle);
+  const displayText = parsed.displaytitle
+    ? new DOMParser().parseFromString(parsed.displaytitle, 'text/html').body.textContent.trim()
+    : '';
+  const shownTitle = (displayText || baseTitle).replace(/\/DST$/, '');
+  h2.textContent = shownTitle;
+  document.title = `${shownTitle} · DST Guide`;
   titleRow.appendChild(h2);
 
   const favBtn = document.createElement('button');
@@ -1314,6 +1777,7 @@ function renderPage(parsed, baseTitle, hasDstVariant, usedTitle, gameMode) {
   wikiLink.rel = 'noopener';
   wikiLink.textContent = 'View on wiki →';
   titleRow.appendChild(wikiLink);
+  titleRow.appendChild(buildShareButton(shownTitle));
 
   content.appendChild(titleRow);
 
@@ -1328,25 +1792,17 @@ function renderPage(parsed, baseTitle, hasDstVariant, usedTitle, gameMode) {
   }
   content.appendChild(note);
 
-  if (craftingSection || sourceSection) {
+  if (sourceSection) {
     const quickLinks = document.createElement('div');
     quickLinks.className = 'quick-links';
-    if (craftingSection) {
-      const b = document.createElement('button');
-      b.className = 'quick-link-btn recipe';
-      b.textContent = '🔨 Jump to Recipe';
-      b.addEventListener('click', () => jumpToSection('quick-crafting-section'));
-      quickLinks.appendChild(b);
-    }
-    if (sourceSection) {
-      const b = document.createElement('button');
-      b.className = 'quick-link-btn source';
-      b.textContent = '📍 Where to Find It';
-      b.addEventListener('click', () => jumpToSection('quick-source-section'));
-      quickLinks.appendChild(b);
-    }
+    const b = document.createElement('button');
+    b.className = 'quick-link-btn source';
+    b.textContent = '📍 Where to Find It';
+    b.addEventListener('click', () => jumpToSection('quick-source-section'));
+    quickLinks.appendChild(b);
     content.appendChild(quickLinks);
   }
+  if (recipeCard) content.appendChild(recipeCard);
 
   const wikiContentEl = document.createElement('div');
   wikiContentEl.id = 'wiki-content';
@@ -1354,6 +1810,25 @@ function renderPage(parsed, baseTitle, hasDstVariant, usedTitle, gameMode) {
 
   content.appendChild(wikiContentEl);
 }
+
+/* ---------- Routing: back/forward, and opening a shared #/wiki/Title link ---------- */
+function routeFromState(state) {
+  closeOverlays();
+  if (state && state.view === 'page') { showResultsMode(); loadPage(state.title, { fromHistory: true }); return; }
+  if (state && state.view === 'list') { showResultsMode(); returnToList(); return; }
+  const m = location.hash.match(/^#\/wiki\/(.+)$/);
+  if (m) {
+    const title = decodeURIComponent(m[1]).replace(/_/g, ' ');
+    navReplace({ view: 'page', title, prev: null }, location.hash);
+    showResultsMode();
+    loadPage(title, { fromHistory: true });
+    return;
+  }
+  navReplace({ view: 'landing' }, HOME_URL);
+  showLanding();
+}
+window.addEventListener('popstate', (ev) => routeFromState(ev.state));
+routeFromState(history.state);
 </script>
 </body>
 </html>
